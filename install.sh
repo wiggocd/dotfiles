@@ -54,17 +54,25 @@ firefoxConfig() {
 			for profile in $profiles; do
 				cp "$root_dir"/firefox/user.js "./$profile"
 			done
-			
-			if [[ -d ./materialfox  ]]; then
-				echo "Using existing MaterialFox clone"
-			else
-				git clone "$materialfox" ./materialfox
-			fi
-			
-			if [[ -d ./materialfox/chrome ]]; then
-				for profile in $profiles; do
-					cp -R ./materialfox/chrome "./$profile"
-				done
+
+			printf "\n[!- Pre-Firefox 89 only -!] Install the MaterialFox theme by muckSponge\n"
+			echo "Do not use this with current versions of Firefox as old-style theming is broken."
+			printf "Proceed? (y/N) "
+			read res
+			if [[ "$res" == "y" ]]; then
+				if [[ -d ./materialfox  ]]; then
+					echo "Using existing MaterialFox clone"
+				else
+					git clone "$materialfox" ./materialfox
+				fi
+				
+				if [[ -d ./materialfox/chrome ]]; then
+					for profile in $profiles; do
+						cp -R ./materialfox/chrome "./$profile"
+					done
+				else
+					echo "Skipping MaterialFox installation"
+				fi
 			else
 				echo "Skipping MaterialFox installation"
 			fi
@@ -93,7 +101,7 @@ run() {
 		installThemes
 	fi
 
-	printf "\nInstall the MaterialFox theme by muckSponge and smooth scrolling config for Firefox?\n"
+	printf "\nInstall Firefox configuration?\n"
 	echo "Note: This will overwrite the Firefox \"user.js\" and \"chrome\" directory files."
 	printf "Proceed? (y/N) "
 	read res

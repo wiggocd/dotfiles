@@ -1,0 +1,170 @@
+<!-- 
+** Example xml dump from libvirt **
+** ! Do not use without modification ! **
+
+Reference materials:
+	https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF
+	https://wiki.archlinux.org/title/libvirt
+	https://wiki.archlinux.org/title/QEMU
+	https://wiki.archlinux.org/title/KVM
+
+Assumes the following:
+	General:
+		libvirt and the `qemu-system-x86_64` binary are present on the system
+		`/usr/share/edk2-ovmf/x64/OVMF_CODE.fd` contains the OVMF VM firmware
+		`/var/lib/libvirt/qemu/nvram/kvm_VARS.fd` contains the generated nvram image for the VM
+	Storage:
+		The boot device / image to pass through is `/var/lib/libvirt/images/kvm.qcow2`
+	Passthrough:
+		PCI device 03:00.0 (GPU) is to be passed through and has been hooked by vfio-pci
+	Domain details:
+		Domain name = 'kvm'
+		Pre-generated UUID
+	Host config:
+		Arch Linux with kernel 5.12.10
+		8 logical host CPUs
+		Over 8GiB host RAM
+		IOMMU, VT-d, EFI enabled
+	Guest config:
+		i440fx chipset is to be used
+			(older than the newer q35 chipset for compatibility reasons)
+		Windows 10 x64
+	Input:
+		`/var/lib/libvirt/inputs/event-<kbd0,kbd1,mouse0>`,
+			are all symlinks to their respective input devices in /dev/...
+	Network:
+		libvirt / virtio networking is properly configured
+	Audio:
+		PulseAudio is running and routed from the current user to /tmp/pulse-socket
+		/tmp/pulse-socket is the default server for PulseAudio running with the root user
+		The PulseAudio `cookie` to access user audio is located in
+			$XDG_CONFIG_HOME/.config/pulse/cookie for the root user (/root)
+
+Useful programs:
+	virt-manager
+-->
+<domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
+  <name>kvm</name>
+  <uuid>b20b96f7-cdad-4831-8055-62384078afc1</uuid>
+  <metadata>
+    <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
+      <libosinfo:os id="http://microsoft.com/win/10"/>
+    </libosinfo:libosinfo>
+  </metadata>
+  <memory unit='KiB'>8388608</memory>
+  <currentMemory unit='KiB'>8388608</currentMemory>
+  <vcpu placement='static'>4</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc-i440fx-6.0'>hvm</type>
+    <loader readonly='yes' secure='no' type='pflash'>/usr/share/edk2-ovmf/x64/OVMF_CODE.fd</loader>
+    <nvram>/var/lib/libvirt/qemu/nvram/kvm_VARS.fd</nvram>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <hyperv>
+      <relaxed state='on'/>
+      <vapic state='on'/>
+      <spinlocks state='on' retries='8191'/>
+    </hyperv>
+    <kvm>
+      <hidden state='on'/>
+    </kvm>
+    <vmport state='off'/>
+    <smm state='on'/>
+  </features>
+  <cpu mode='host-passthrough' check='none' migratable='on'>
+    <topology sockets='1' dies='1' cores='4' threads='1'/>
+  </cpu>
+  <clock offset='localtime'>
+    <timer name='rtc' tickpolicy='catchup'/>
+    <timer name='pit' tickpolicy='delay'/>
+    <timer name='hpet' present='no'/>
+    <timer name='hypervclock' present='yes'/>
+  </clock>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <pm>
+    <suspend-to-mem enabled='no'/>
+    <suspend-to-disk enabled='no'/>
+  </pm>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='raw' cache='none' io='native'/>
+      <source dev='/var/lib/libvirt/images/kvm.qcow2'/>
+      <target dev='sda' bus='sata'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='usb' index='0' model='qemu-xhci' ports='15'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='pci' index='1' model='pci-bridge'>
+      <model name='pci-bridge'/>
+      <target chassisNr='1'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+    </controller>
+    <controller type='pci' index='2' model='pci-bridge'>
+      <model name='pci-bridge'/>
+      <target chassisNr='2'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
+    </controller>
+    <controller type='pci' index='3' model='pci-bridge'>
+      <model name='pci-bridge'/>
+      <target chassisNr='3'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
+    </controller>
+    <controller type='sata' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </controller>
+    <interface type='network'>
+      <mac address='52:54:00:ff:99:87'/>
+      <source network='default'/>
+      <model type='e1000e'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </interface>
+    <serial type='pty'>
+      <target type='isa-serial' port='0'>
+        <model name='isa-serial'/>
+      </target>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <sound model='ich9'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </sound>
+    <audio id='1' type='none'/>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
+      </source>
+      <rom bar='on'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x01' function='0x0'/>
+    </hostdev>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
+    </memballoon>
+  </devices>
+  <qemu:commandline>
+    <qemu:arg value='-cpu'/>
+    <qemu:arg value='host,kvm=off,-hypervisor'/>
+    <qemu:arg value='-object'/>
+    <qemu:arg value='input-linux,id=kbd0,evdev=/var/lib/libvirt/inputs/event-kbd0,grab_all=on,repeat=on'/>
+    <qemu:arg value='-object'/>
+    <qemu:arg value='input-linux,id=kbd1,evdev=/var/lib/libvirt/inputs/event-kbd1,grab_all=on,repeat=on'/>
+    <qemu:arg value='-object'/>
+    <qemu:arg value='input-linux,id=mouse1,evdev=/var/lib/libvirt/inputs/event-mouse0'/>
+    <qemu:env name='QEMU_AUDIO_DRV' value='pa'/>
+    <qemu:env name='QEMU_PA_SAMPLES' value='8192'/>
+    <qemu:env name='QEMU_AUDIO_TIMER_PERIOD' value='99'/>
+    <qemu:env name='QEMU_PA_SERVER' value='/tmp/pulse-socket'/>
+  </qemu:commandline>
+</domain>
+

@@ -1,0 +1,3 @@
+killall $1
+while pgrep -u $USER $1 > /dev/null; do sleep 1; done
+$1

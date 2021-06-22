@@ -56,10 +56,10 @@ All packages are listed assuming use of the main Arch Linux repos and Arch User 
 
 **Recommended packages**
 
-`pikaur zsh autotiling alacritty kitty ttf-droid grml-zsh-config lxappearance firefox vim micro xorg-xset xss-lock i3lock-color-git redshift zsh-theme-powerlevel10k-git`
+`pikaur zsh autotiling alacritty kitty ttf-droid grml-zsh-config lxappearance firefox vim micro physlock xorg-xset xss-lock redshift-gtk autorandr zsh-theme-powerlevel10k-git`
 
-**Other packages, including programs and tools used**
+**Other packages, including programs and utilities used**
 
-`lxpolkit libinput-gestures xorg-xrandr code mpd mpc ncmpcpp pulseaudio network-manager`
+`lxpolkit libinput-gestures xorg-xrandr code mpd mpd-mpris mpc ncmpcpp pulseaudio network-manager`
 
 Keeping in mind that configurations will be overwritten, run `./install.sh` to install the configuration files.
