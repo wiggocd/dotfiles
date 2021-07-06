@@ -1,6 +1,6 @@
 # Dotfiles
 
-Dotfiles for Arch Linux
+Configuration for Arch Linux
 
 ## Screenshots
 
