@@ -1,3 +1,5 @@
+# Dotfiles
+
 Dotfiles for Arch Linux
 
 ## Screenshots
@@ -48,7 +50,7 @@ Dotfiles for Arch Linux
 
 ## Installation
 
-All packages are listed assuming use of the main Arch Linux repos and Arch User Repository (AUR)
+All packages are listed assuming acces to the main Arch Linux repos and Arch User Repository
 
 **Dependencies**
 
@@ -56,7 +58,7 @@ All packages are listed assuming use of the main Arch Linux repos and Arch User 
 
 **Recommended packages**
 
-`pikaur zsh autotiling alacritty kitty ttf-droid grml-zsh-config lxappearance firefox vim micro physlock xorg-xset xss-lock redshift-gtk autorandr zsh-theme-powerlevel10k-git`
+`pikaur zsh autotiling alacritty kitty ttf-droid grml-zsh-config lxappearance firefox vim micro physlock xorg-xset xss-lock xorg-xbacklight redshift-gtk autorandr zsh-theme-powerlevel10k-git`
 
 **Other packages, including programs and utilities used**
 
