@@ -10,43 +10,41 @@ Configuration for Arch Linux
 
 ## Details
 
-**OS** GNU/Linux
+**OS** [GNU](https://www.gnu.org)/[Linux](https://github.com/torvalds/linux)
 
-**Distro** Arch Linux
+**Distro** [Arch Linux](https://archlinux.org)
 
-**WM** i3-gaps
+**WM** [i3-gaps](https://github.com/Airblader/i3)
 
-**Compositor** picom-ibhagwan
+**Compositor** [picom-ibhagwan](https://aur.archlinux.org/packages/picom-ibhagwan-git)
 
-**Bar** polybar, original theme by adi1090x (modified)
+**Bar** [polybar](https://github.com/polybar/polybar), [original theme by adi1090x](https://github.com/adi1090x/polybar-themes) (modified)
 
-**Launcher** rofi
+**Launcher** [rofi](https://github.com/davatorium/rofi), [theme by adi1090x](https://github.com/adi1090x/rofi)
 
-**Terminal Emulators** alacritty, kitty
+**Terminal Emulators** [alacritty](https://github.com/alacritty/alacritty), [kitty](https://github.com/kovidgoyal/kitty)
 
-**Shell** zsh
+**Shell** [zsh](https://www.zsh.org)
 
-**Shell Theme** grml-zsh-config, powerlevel10k
+**Shell Theme** [grml-zsh-config](https://github.com/grml/grml-etc-core), [powerlevel10k](https://github.com/romkatv/powerlevel10k)
 
-**AUR Helper** pikaur
+**AUR Helper** [pikaur](https://github.com/actionless/pikaur)
 
-**Text Editors** micro, vim, code
+**Text Editors** [micro](https://github.com/zyedidia/micro), [vim](https://github.com/vim/vim), [code](https://github.com/microsoft/vscode)
 
-**Monospace Fonts** GohuFont, MesloLGS NF, Droid Sans Mono
+**Monospace Fonts** [GohuFont](https://github.com/hchargois/gohufont), [MesloLGS NF](https://github.com/ryanoasis/nerd-fonts), [Droid Sans Mono](https://fonts.adobe.com/fonts/droid-sans))
 
-**UI Fonts** Droid Sans 11pt
+**UI Fonts** [Droid Sans 11pt](https://fonts.adobe.com/fonts/droid-sans)
 
-**Browser** firefox
+**Browser** [Firefox](https://hg.mozilla.org/mozilla-central/)
 
-**Browser Theme** MaterialFox
+**GTK Theme** [ChromeOS-light-compact](https://github.com/vinceliuice/ChromeOS-theme)
 
-**GTK Theme** ChromeOS-light-compact
+**Icon Theme** [Papirus](https://github.com/PapirusDevelopmentTeam/papirus-icon-theme)
 
-**Icon Theme** Papirus
+**Cursor Theme** [Apple Cursor](https://github.com/ful1e5/apple_cursor)
 
-**Cursor Theme** McMojave Cursors
-
-**Music Player** mpd + ncmpcpp
+**Music Player** [mpd](https://github.com/MusicPlayerDaemon/MPD) + [ncmpcpp](https://github.com/ncmpcpp/ncmpcpp)
 
 ## Dependencies and Packages
 
