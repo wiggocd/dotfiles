@@ -6,8 +6,6 @@ Configuration for Arch Linux
 
 ![Primary](images/screenshot-1.png)
 
-![Secondary](images/screenshot-2.png)
-
 ## Details
 
 **OS** [GNU](https://www.gnu.org)/[Linux](https://github.com/torvalds/linux)
