@@ -6,8 +6,9 @@
 #	GNU coreutils
 #	git
 
-DESKTOP_THEME="https://github.com/vinceliuice/ChromeOS-theme"
-FF_THEME="https://github.com/muckSponge/MaterialFox"
+DESKTOP_THEME_GIT="https://github.com/vinceliuice/ChromeOS-theme"
+CURSOR_THEME_BIN="https://github.com/ful1e5/apple_cursor/releases/latest/download/macOSBigSur.tar.gz"
+FF_THEME_GIT="https://github.com/muckSponge/MaterialFox"
 TPM="https://github.com/tmux-plugins/tpm"
 
 chkdir() {
@@ -56,7 +57,7 @@ install_themes() {
 	ROOTDIR=$(pwd)
 	TMPDIR=desktop-theme
 	
-	git clone "$DESKTOP_THEME" "$TMPDIR"
+	git clone "$DESKTOP_THEME_GIT" "$TMPDIR"
 	if [ -d ./desktop-theme ]; then
 		cd ./desktop-theme 	&& \
 		./install.sh
@@ -66,6 +67,12 @@ install_themes() {
 
 	chkdir "$HOME"/.themes
 	cp -R themes/* "$HOME"/.themes
+
+	chkdir "$HOME"/.icons
+	curl -L -o cursors.tar.gz "$CURSOR_THEME_BIN" && \
+	tar -xzf cursors.tar.gz && \
+	mv macOSBigSur ~/.icons
+	rm -f cursors.tar.gz
 }
 
 install_tmux_conf() {
@@ -83,7 +90,7 @@ firefox_config() {
 	FFROOT="$HOME"/.mozilla/firefox
 	
 	if [ -d "$FFROOT" ]; then
-		ROOTFIR=$(pwd)
+		LAST_PWD=$(pwd)
 		FF_FILES=$(ls "$HOME"/.mozilla/firefox)
 
 		cd "$FFROOT" && \
@@ -91,10 +98,10 @@ firefox_config() {
 		
 		if [ -n $profiles ]; then
 			for profile in $profiles; do
-				cp "$ROOTDIR"/firefox/user.js "./$profile"
+				cp "$LAST_PWD"/firefox/user.js "./$profile"
 			done
 
-			echo -e "\n[- Pre-Firefox 89 only -] Install the MaterialFox theme by muckSponge?" \
+			echo -e "\n[* Pre-Firefox 89 only *] Install the MaterialFox theme by muckSponge?" \
 					"\nDo not use this with current versions of Firefox as old-style theming is broken."
 			
 			input "(y/N) " res
@@ -102,7 +109,7 @@ firefox_config() {
 				if [ -d ./materialfox  ]; then
 					echo "Using existing MaterialFox clone"
 				else
-					git clone "$FF_THEME" ./materialfox
+					git clone "$FF_THEME_GIT" ./materialfox
 				fi
 				
 				if [ -d ./materialfox/chrome ]; then
@@ -130,7 +137,7 @@ install_config() {
 
 	copy && post_copy
 
-	echo -e "\nInstall the desktop themes (GTK+, etc.)?" \
+	echo -e "\nInstall the desktop and cursor themes (GTK+, etc.)?" \
 			"\nThis requires the GTK Murrine engine for your distro (gtk-engine-murrine for Arch)."
 	input "(y/N) " res
 	if [ "$res" == "y" ]; then

@@ -28,9 +28,10 @@ shift $((OPTIND-1))
 
 IN="$PWD"/PACKAGES
 PWD="$(pwd)"
-([ -f "$1" ] && IN="$1")            \
-	|| (echo "Input file does not exist" >&2; exit 1)
-([ -n "${OUT-}" ] && OUT="$OUT")    \
+[ -n "${1-}" ] && ( ( [ -f "$1" ] 	\
+					&& IN="$1" ) 	\
+					|| echo "Input file does not exist" >&2; exit 1 )
+([ -n "${OUT-}" ] && OUT="$OUT") \
 	|| OUT="$PWD"/VERSIONS
 
 PACKAGES=$(cat "$IN")

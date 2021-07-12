@@ -40,3 +40,5 @@ networkmanager
 pavucontrol
 papirus-icon-theme
 libqalculate
+curl
+tar
