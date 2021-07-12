@@ -158,13 +158,13 @@ install_config() {
 			"\nYou may also now use a tool such as lxappearance to customise GTK and other theming options <3"
 }
 
-echo -e <<-EOF "** Linux dotfiles configuration script **
+echo -e "** Linux dotfiles configuration script **
 Make sure that you have read the readme and installed the required dependencies.
 This script should only be run from the repository root.
 
 The script **will** overwrite various configuration files,
-so please don't proceed if you have any configurations that you have not backed up."
-EOF
+so please don't proceed if you have any configurations that you have not backed up.
+"
 
 input "Proceed to installation? (y/N) " res
 if [ "$res" == "y" ]; then
