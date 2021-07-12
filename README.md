@@ -48,20 +48,44 @@ Configuration for Arch Linux
 
 **Music Player** mpd + ncmpcpp
 
-## Installation
+## Dependencies and Packages
 
-All packages are listed assuming acces to the main Arch Linux repos and Arch User Repository
+All packages are listed assuming acces to the main/extra Arch Linux repos and Arch User Repository
 
 **Dependencies**
 
-`bash i3-gaps rofi picom-ibhagwan-git polybar-git fontconfig feh`
+`bash coreutils git i3-gaps rofi picom-ibhagwan-git polybar fontconfig feh`
 
 **Recommended packages**
 
-`pikaur zsh autotiling alacritty kitty ttf-droid grml-zsh-config lxappearance firefox vim micro physlock xorg-xset xss-lock xorg-xbacklight redshift-gtk autorandr zsh-theme-powerlevel10k-git`
+`sudo pikaur zsh autotiling alacritty kitty tmux firefox vim micro ttf-droid grml-zsh-config lxappearance physlock xorg-xset xss-lock xorg-xbacklight redshift-gtk autorandr zsh-theme-powerlevel10k-git papirus-icon-theme`
 
 **Other packages, including programs and utilities used**
 
-`lxpolkit libinput-gestures xorg-xrandr code mpd mpd-mpris mpc ncmpcpp pulseaudio network-manager`
+`lxsession libinput-gestures xorg-xrandr visual-studio-code-bin mpd mpd-mpris mpc ncmpcpp pulseaudio pavucontrol networkmanager libqalculate`
 
-Keeping in mind that configurations will be overwritten, run `./install.sh` to install the configuration files.
+## Installation
+
+- Feel free to copy the files manually, where `config` maps to `$XDG_CONFIG_HOME` and `scripts` maps to `$HOME/scripts`, etc...
+
+*or* keeping in mind that configurations **will** be overwritten
+
+- Run `./install.sh` to install the configuration files automatically
+
+## Tested Versions
+
+- OS
+	- Arch Linux x86_64 5.12.14
+- Packages
+	- See `VERSIONS`
+
+## Documentation
+
+To use this for your own desktop configuration, there are some useful scripts in the `dev` directory:
+
+- `getversions`
+	- Read pacman package versions for a specified list of packages into a file
+- `testenv`
+	- Start a new shell with a clean environment to test the dotfiles scripts
+
+Enjoy! <3

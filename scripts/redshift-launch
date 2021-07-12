@@ -1,3 +1,0 @@
-killall redshift
-while pgrep -u $USER redshift > /dev/null; do sleep 1; done
-redshift -P

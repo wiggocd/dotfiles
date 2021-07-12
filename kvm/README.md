@@ -1,11 +1,14 @@
-Examples of QEMU/KVM usage
+QEMU/KVM script examples
 
 ## Scripts
 
 - QEMU
 	- `vm`
-		- For reference to build a new script, or
-		- edit the variables for host/guest configuration and run it
+		- Reference to build a new script
+
+		*or*
+
+		- Edit the variables for host/guest configuration and run
 
 - libvirt
 	- `vm-set*`

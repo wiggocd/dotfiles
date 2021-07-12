@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+EXEC=$(basename $0)
+PKGMAN=$(which pacman) \
+	|| (echo "Package manager `pacman` not available."; exit 1)
+
+usage() {
+	expand --tabs=4 <<-EOF
+	usage: $EXEC [options] [path to package list]
+	Outputs package versions from pacman into a file.
+
+	options:
+		-o [filename]         specify output file
+		-h                    display usage
+	EOF
+}
+
+while getopts ":o:h" opt; do
+	case $opt in 
+		o)  OUT="$OPTARG" ;;
+		h)  usage; exit 0 ;;
+		*)  echo "Invalid option -$OPTARG, run \`$EXEC -h\` to show usage" >&2;
+			exit 1 ;;
+	esac
+done
+
+shift $((OPTIND-1))
+
+IN="$PWD"/PACKAGES
+PWD="$(pwd)"
+([ -f "$1" ] && IN="$1")            \
+	|| (echo "Input file does not exist" >&2; exit 1)
+([ -n "${OUT-}" ] && OUT="$OUT")    \
+	|| OUT="$PWD"/VERSIONS
+
+PACKAGES=$(cat "$IN")
+$PKGMAN -Q $PACKAGES > "$OUT"
