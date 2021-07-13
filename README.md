@@ -30,7 +30,7 @@ Configuration for Arch Linux
 
 **Text Editors** [micro](https://github.com/zyedidia/micro), [vim](https://github.com/vim/vim), [code](https://github.com/microsoft/vscode)
 
-**Monospace Fonts** [GohuFont](https://github.com/hchargois/gohufont), [MesloLGS NF](https://github.com/ryanoasis/nerd-fonts), [Droid Sans Mono](https://fonts.adobe.com/fonts/droid-sans))
+**Monospace Fonts** [GohuFont](https://github.com/hchargois/gohufont), [MesloLGS NF](https://github.com/ryanoasis/nerd-fonts), [Droid Sans Mono](https://fonts.adobe.com/fonts/droid-sans)) [Terminus](http://terminus-font.sourceforge.net/)
 
 **UI Fonts** [Droid Sans 11pt](https://fonts.adobe.com/fonts/droid-sans)
 
