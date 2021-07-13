@@ -29,7 +29,7 @@ copy() {
 	cp -R config/* "$XDG_CONFIG_HOME"
 	
 	chkdir "$HOME"/scripts
-	cp -R scripts/* "$HOME"/scripts
+	cp $(find scripts -maxdepth 1 -type f) "$HOME"/scripts
 	
 	chkdir "$HOME"/Pictures
 	cp -R images/bg "$HOME"/Pictures/Wallpaper

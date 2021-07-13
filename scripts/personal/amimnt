@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+HOSTNAME=AMIGA
+SHARENAME=All
+SUBNET=5
+USERNAME=""
+PASSWORD=""
+MNTPOINT=/run/media/$USER/Amiga
+
+echo "Scanning subnet $SUBNET for host $HOSTNAME..."
+ADDR=$(sudo nbtscan -r 192.168.$SUBNET.0/24 -s ' ' \
+		| grep -E '.* '$HOSTNAME | cut -d ' ' -f1)
+
+[ -n "$ADDR" ] || (echo "Unable to get address of host."; exit 1)
+
+if [ ! -d "$MNTPOINT" ]; then
+	sudo mkdir -p "$MNTPOINT" && sudo chown $USER:$USER "$MNTPOINT"
+elif mountpoint -q "$MNTPOINT"; then
+	sudo umount "$MNTPOINT"
+fi
+
+ARGS="-t cifs \
+-o username='$USERNAME',password='$PASSWORD',\
+uid=$UID,gid=$UID,file_mode=0775,dir_mode=0775,\
+vers=1.0 \
+//$ADDR/$SHARENAME \
+$MNTPOINT"
+
+if [ $? == 0 ]; then
+	echo mount options: $ARGS
+	sudo mount $ARGS && echo "Mounted //$ADDR/$SHARENAME at $MNTPOINT"
+else
+	echo "Unable to create mount point"; exit $?
+fi
