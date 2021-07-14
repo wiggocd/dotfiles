@@ -49,6 +49,12 @@ post_copy() {
 	if [ -z "$res" ] || [ "${res^^}" == 'Y' ]; then
 		scripts/setbg "$HOME"/Pictures/Wallpaper/default
 	fi
+
+	MICRO=$(command -v micro)
+	if [ $? == 0 ]; then
+		echo "Installing micro editor plugins..."
+		"$MICRO" -plugin install filemanager
+	fi
 	
 	fc-cache -f
 }
