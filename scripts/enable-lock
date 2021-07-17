@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 dim_after=300
 lock_after_dim=120
 xset s $dim_after $lock_after_dim
-xss-lock --transfer-sleep-lock -n ~/scripts/dim -- ~/scripts/lock -n
+xss-lock --transfer-sleep-lock -n ~/scripts/dim -- ~/scripts/lock -n & disown %1

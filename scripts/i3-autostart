@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# i3wm autostart script
+
+PATH="$PATH:$HOME/scripts"
+
+xrandr --auto
+autorandr -c
+xrdb -merge $HOME/.Xresources
+
+$HOME/.config/picom/launch.sh &
+$HOME/.config/polybar/launch.sh &
+[ -x "$HOME/.fehbg" ] && $HOME/.fehbg &
+
+lxpolkit &
+libinput-gestures &
+autotiling &
+playerctld daemon &
+
+relaunch redshift &
+relaunch mpd-mpris &
+enable-lock &

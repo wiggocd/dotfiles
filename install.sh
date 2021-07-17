@@ -40,6 +40,8 @@ copy() {
 	for file in shell/*; do
 		cp "$file" "$HOME/.$(basename $file)"
 	done
+
+	cp X/Xresources "$HOME/.Xresources"
 	
 	chmod +x "$HOME"/scripts/*
 }

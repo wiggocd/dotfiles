@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+LOCKER=xss-lock
+
+xset s 0 0
+[ -n "$(ps -C $LOCKER)" ] && killall $LOCKER

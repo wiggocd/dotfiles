@@ -1,0 +1,13 @@
+#!/bin/bash
+
+mnt=/mnt
+ADDR=""
+SHARE=""
+
+if mountpoint -q "$mnt"; then
+	sudo umount "$mnt"
+fi
+
+sudo mount -t cifs //$ADDR/$SHARE $mnt \
+-o user='',pass='',\
+vers=1.0,sec=ntlm,gid=wheel,dir_mode=0775,file_mode=0775
