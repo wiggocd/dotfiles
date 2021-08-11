@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+TIME_DIM=500
+TIME_LOCK=250
+# TIME_OFF=$(($TIME_DIM+$TIME_LOCK))
+
+disable-lock
+xset s $TIME_DIM $TIME_LOCK
+# xset dpms $(printf "$TIME_OFF "'%.0s' {1..3})
+
+xss-lock --transfer-sleep-lock -n dim -- lock -n & disown %1

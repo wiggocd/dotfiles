@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+LOCKER=xss-lock
+
+xset -dpms
+xset s off
+ps -C $LOCKER >/dev/null && killall $LOCKER || true

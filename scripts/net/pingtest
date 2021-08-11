@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+refresh_s=1
+gateway=""
+echo "Waiting for gateway..."
+while [ -z "$gateway" ]; do
+	gateway=$(ip route show | grep -i 'default via' | awk '{print $3}')
+	[ -n "$gateway" ] || sleep $refresh_s
+done
+
+if [ $? == 0 ]; then
+	echo "Pinging gateway $gateway..."
+	ret=1
+	while [ $ret != 0 ]; do
+		ping $gateway
+		ret=$?
+		[ $ret == 0 ] || sleep $refresh_s
+	done
+else
+	echo "Unable to find gateway." 2>&2
+	exit 1
+fi

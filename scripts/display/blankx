@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+PIDFILE="/run/user/$UID/blankx.pid"
+echo $$ > "$PIDFILE"
+
+LAST_LIGHT=$(xbacklight -get)
+# LAST_ACTIVE=$(xrandr --listactivemonitors | grep -P "\\d\:" | rev | cut -d' ' -f 1 | rev)
+
+trap restore SIGINT
+restore() {
+	xbacklight -set $LAST_LIGHT
+	[ -f "$PIDFILE" ] && rm "$PIDFILE"
+	exit
+}
+
+xbacklight -set 0
+read -sn1 res
+restore

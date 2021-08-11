@@ -1,4 +1,7 @@
-export PATH="$HOME/scripts:$PATH"
+source /etc/profile
+
+export SCRIPTS="$HOME/.local/scripts"
+export PATH="$HOME/.local/bin:$SCRIPTS:$PATH"
 
 alias ll="ls -l"
 alias la="ls -al"
@@ -6,3 +9,5 @@ alias lsd="ls -ld"
 alias c="clear"
 alias pac="sudo pacman"
 alias aur="pikaur"
+alias setrandr="touch $RANDRLOCK >/dev/null; \
+                autorandr -l"

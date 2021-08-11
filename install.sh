@@ -8,12 +8,9 @@
 
 DESKTOP_THEME_GIT="https://github.com/vinceliuice/ChromeOS-theme"
 CURSOR_THEME_BIN="https://github.com/ful1e5/apple_cursor/releases/latest/download/macOSBigSur.tar.gz"
+LOCKER_GIT="https://github.com/rainbowgoth/sxlock"
 FF_THEME_GIT="https://github.com/muckSponge/MaterialFox"
 TPM="https://github.com/tmux-plugins/tpm"
-
-chkdir() {
-	[ -d "$1" ] || mkdir -p "$1"
-}
 
 input() {
 	local -n ref=$2
@@ -22,43 +19,36 @@ input() {
 }
 
 copy() {
-	if [ ! -d "$XDG_CONFIG_HOME" ] || [ ! -n "${XDG_CONFIG_HOME-}" ] ; then
+	if [ ! -d "${XDG_CONFIG_HOME-}" ] ; then
 		export XDG_CONFIG_HOME="$HOME"/.config
 		mkdir -p "$XDG_CONFIG_HOME"
 	fi
 	cp -R config/* "$XDG_CONFIG_HOME"
 	
-	chkdir "$HOME"/scripts
-	cp $(find scripts -maxdepth 1 -type f) "$HOME"/scripts
+	mkdir -p "$HOME"/scripts
+	cp -R scripts/* "$HOME"/scripts
 	
-	chkdir "$HOME"/Pictures
+	mkdir -p "$HOME"/Pictures
 	cp -R images/bg "$HOME"/Pictures/Wallpaper
 	
-	chkdir "$HOME"/.local/share/fonts
+	mkdir -p "$HOME"/.local/share/fonts
 	cp -R fonts/* "$HOME"/.local/share/fonts
 
-	for file in shell/*; do
+	for file in shell/* X/*; do
 		cp "$file" "$HOME/.$(basename $file)"
 	done
-
-	cp X/Xresources "$HOME/.Xresources"
 	
 	chmod +x "$HOME"/scripts/*
 }
 
 post_copy() {
-	input "Set the default wallpaper? (Y/n) " res
-	if [ -z "$res" ] || [ "${res^^}" == 'Y' ]; then
-		scripts/setbg "$HOME"/Pictures/Wallpaper/default
-	fi
-
-	MICRO=$(command -v micro)
-	if [ $? == 0 ]; then
-		echo "Installing micro editor plugins..."
-		"$MICRO" -plugin install filemanager
+	input "Set the default wallpaper now? (Y/n) " res
+	if [ -n "${DISPLAY-}" ] && [[ -z "$res" || "${res^^}" == 'Y' ]]; then
+		scripts/theme/setbg "$HOME"/Pictures/Wallpaper/default
 	fi
 	
 	fc-cache -f
+	"$HOME"/scripts/update-scripts
 }
 
 install_themes() {
@@ -66,17 +56,17 @@ install_themes() {
 	TMPDIR=desktop-theme
 	
 	git clone "$DESKTOP_THEME_GIT" "$TMPDIR"
-	if [ -d ./desktop-theme ]; then
-		cd ./desktop-theme 	&& \
+	if [ -d "$TMPDIR" ]; then
+		cd "$TMPDIR" 	    && \
 		./install.sh
-		cd "$ROOTDIR"		&& \
+		cd "$ROOTDIR"	    && \
 		rm -rf "$TMPDIR"
 	fi
 
-	chkdir "$HOME"/.themes
+	mkdir -p "$HOME"/.themes
 	cp -R themes/* "$HOME"/.themes
 
-	chkdir "$HOME"/.icons
+	mkdir -p "$HOME"/.icons
 	curl -L -o cursors.tar.gz "$CURSOR_THEME_BIN" && \
 	tar -xzf cursors.tar.gz && \
 	mv macOSBigSur ~/.icons
@@ -84,7 +74,7 @@ install_themes() {
 }
 
 install_tmux_conf() {
-	if [[ -d "$XDG_CONFIG_HOME"/tmux ]]; then
+	if [ -d "$XDG_CONFIG_HOME"/tmux ]; then
 		ln -s "$XDG_CONFIG_HOME"/tmux "$HOME"/.tmux
 		ln -s "$XDG_CONFIG_HOME"/tmux/tmux.conf "$HOME"/.tmux.conf
 	fi
@@ -92,6 +82,19 @@ install_tmux_conf() {
 	git clone "$TPM" "$HOME"/.tmux/plugins/tpm && \
 	echo -e "\n** Type <Prefix> Shift+I in tmux to install the provided themes/packages. **" \
 			"\n(Default prefix for this config is M-a [Alt+A])"
+}
+
+install_locker() {
+    ROOTDIR=$(pwd)
+    TMPDIR=locker
+
+    git clone "$LOCKER_GIT" "$TMPDIR"
+    if [ -d "$TMPDIR" ]; then
+        cd "$TMPDIR" 	    && \
+        make && sudo make install
+        cd "$ROOTDIR"		&& \
+        rm -rf "$TMPDIR"
+    fi
 }
 
 firefox_config() {
@@ -153,6 +156,13 @@ install_config() {
 		install_themes
 	fi
 
+	echo -e "\nInstall the recommended screen locker? (sxlock fork)"
+    input "(y/N) " res
+    if [ "$res" == "y" ]; then
+        echo "Installing screen locker..."
+        install_locker
+    fi
+
 	echo -e "\nInstall tmux and TPM configuration?"
 	input "(y/N) " res
 	if [ "$res" == "y" ]; then
@@ -169,6 +179,7 @@ install_config() {
 	fi
 
 	echo -e "\n** Installed dotfiles. **" \
+            "\nRestart your shell to launch into a usable state." \
 			"\nRun \`setbg <path to image>\` to change your desktop background." \
 			"\nYou may also now use a tool such as lxappearance to customise GTK and other theming options <3"
 }

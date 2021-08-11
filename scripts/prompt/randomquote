@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+err() { echo "$1" >&2; exit $2; };
+
+DBLOC="$XDG_CONFIG_HOME/randomquote/quotes.db"
+[[ -f "$DBLOC" && -r "$DBLOC" ]] \
+    || err "No readable quote database found at $DBLOC" 1
+
+IFS=$'\n' read -a LINES -d '' < "$DBLOC"
+
+LEN=${#LINES[@]}
+(( $LEN > 0 )) \
+    || err "No data in database" 1
+
+NUM=$((1 + $RANDOM % $LEN))
+LINE=${LINES[NUM]}
+
+ESC_RET="\e[0m"
+ESC_BG="\e[48;5;"
+ESC_FG="\e[38;5;"
+
+BG="${ESC_BG}16m"
+BGA="${ESC_BG}233m"
+FG="${ESC_FG}7m"
+
+R="${ESC_FG}199m"
+O="${ESC_FG}202m"
+Y="${ESC_FG}208m"
+G="${ESC_FG}154m"
+B="${ESC_FG}117m"
+I="${ESC_FG}81m"
+V="${ESC_FG}171m"
+T="${ESC_FG}165m"
+
+COLORS=($R $O $Y $G $B $I $V $T)
+COLOR_COUNT=${#COLORS[@]}
+
+tmp=""
+i=0
+j=0
+for i in $(seq 0 ${#LINE}); do
+    c=${LINE:i:1}
+    color=${COLORS[j]}
+    tmp="${tmp}${color}$c"
+    if [ "$c" != ' ' ]; then
+        j=$((j + 1))
+    fi
+
+    if (( $j >= $COLOR_COUNT )); then
+        j=0
+    fi
+done
+
+LINE="$tmp"
+
+LEFT="${ESC_RET}${BG}${FG}** ~~ "
+CENTER="${BGA}${LINE}"
+RIGHT="${FG}${BG} ~~ **${ESC_RET}"
+
+MSG="${LEFT}${CENTER}${RIGHT}"
+echo -e "$MSG"

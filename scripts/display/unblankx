@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+PIDFILE="/run/user/$UID/blankx.pid"
+if [ -e "$PIDFILE" ]; then
+	BX_PID=$(cat "$PIDFILE")
+	ps -p "$BX_PID" > /dev/null && kill -SIGINT $BX_PID
+fi

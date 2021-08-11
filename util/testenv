@@ -12,7 +12,7 @@ usage() {
 	EOF
 }
 
-while getopts ":h:" opt; do
+while getopts ":h" opt; do
 	case $opt in
 		h)	usage; exit 0 ;;
 		*)	echo "Invalid option -$OPTARG, run \`$EXEC -h\` to show usage" >&2;
@@ -33,4 +33,5 @@ TERM=$TERM
 "
 
 mkdir -p "$DIRECTORY" && \
-/usr/bin/env -i -C "$DIRECTORY" $NEWENV bash
+cd "$DIRECTORY" && \
+/usr/bin/env -iS $NEWENV bash -c "source /etc/profile; exec bash"

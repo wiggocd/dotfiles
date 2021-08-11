@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+read locstring
+FMT='--latitude LATD --longitude LONGD'
+
+if [[ "$locstring" == *:* ]]; then
+    SPLIT=($(echo "$locstring" | sed 's/:/ /'))
+    if [ ${#SPLIT[@]} == 2 ]; then
+        LAT=${SPLIT[0]}
+        LONG=${SPLIT[1]}
+
+        [[ "$LAT" == -* ]] && LATD="${LAT/-/}S" || LATD="${LAT}N"
+        [[ "$LONG" == -* ]] && LONGD="${LONG/-/}W" || LONGD="${LONG}E"
+
+        LATSUB="${FMT/LATD/$LATD}"
+        FULLSUB="${LATSUB/LONGD/$LONGD}"
+        echo $FULLSUB
+    fi
+fi

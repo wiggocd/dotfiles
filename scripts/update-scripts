@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+SRC="$HOME/scripts"
+BIN="$HOME/.local/scripts"
+mkdir -p "$BIN"
+
+find "$BIN" -type l |
+    while read file; do
+        rm "$file"
+    done
+
+find "$SRC" -not -path '*/\.*' -type f |
+    while read file; do
+        ln -s "$file" "$BIN/$(basename $file)"
+    done
+
+source ~/.profile

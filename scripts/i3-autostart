@@ -2,21 +2,39 @@
 
 # i3wm autostart script
 
-PATH="$PATH:$HOME/scripts"
+LOC=$(cat "$XDG_CONFIG_HOME/locations/current")
+LOCSTRING="$(echo $LOC | fmt_helio_location)"
+XRES="$HOME/.Xresources"
+LIBINPUTG="$(which libinput-gestures)"
+
+update-scripts
 
 xrandr --auto
-autorandr -c
-xrdb -merge $HOME/.Xresources
 
-$HOME/.config/picom/launch.sh &
-$HOME/.config/polybar/launch.sh &
-[ -x "$HOME/.fehbg" ] && $HOME/.fehbg &
+if [ -f "$XRES" ]; then
+    xrdb -merge "$XRES"; fi
+    
+if [ -f "$RANDRLOCK" ]; then
+    autorandr -c; fi
 
-lxpolkit &
-libinput-gestures &
-autotiling &
-playerctld daemon &
+relaunch picom      --config $XDG_CONFIG_HOME/picom/picom.conf --backend glx &
+relaunch polybar    -q main -c $XDG_CONFIG_HOME/polybar/config.ini &
 
-relaunch redshift &
-relaunch mpd-mpris &
-enable-lock &
+relaunch python3 $LIBINPUTG &
+relaunch autotiling         &
+relaunch playerctld         &
+relaunch mpd-mpris          &
+relaunch blueman-applet     &
+relaunch xsettingsd         &
+relaunch enable-lock        &
+relaunch schedule_themes    &
+
+if [ -x "$HOME/.fehbg" ]; then
+    $HOME/.fehbg &
+fi
+    
+if [ -n "$LOC" ]; then
+    relaunch redshift -l $LOC -m vidmode &
+fi
+
+firefox_static_location

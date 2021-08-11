@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-HOSTNAME=""
-SHARENAME=""
-SUBNET=1
-USERNAME=""
-PASSWORD=""
-MNTPOINT=/run/media/$USER/$SHARENAME
+HOSTNAME=AMIGA
+SHARENAME=All
+SUBNET=5
+USERNAME="kwiggins"
+PASSWORD="a3tEr01Ds"
+MNTPOINT=/run/media/$USER/Amiga
 
 echo "Scanning subnet $SUBNET for host '$HOSTNAME'..."
 ADDR=$(sudo nbtscan -r 192.168.$SUBNET.0/24 -s ' ' \

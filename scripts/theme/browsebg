@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+IMAGES="$HOME/Pictures/Wallpaper"
+
+res=($(xdpyinfo | awk '/dimensions/{print $2}' | sed 's/x/ /'))
+w=${res[0]}
+h=${res[1]}
+
+mult() { echo $1 $2 | awk '{print $1 * $2}'; }
+
+scale='0.1'
+prev_w=$(mult $w $scale | cut -d '.' -f1)
+prev_h=$(mult $h $scale | cut -d '.' -f1)
+prev_geometry="${prev_w}x${prev_h}"
+
+prev_cmd="feh --class feh-popup --scale-down --image-bg black --geometry $prev_geometry {}"
+
+img=$(find "$IMAGES" -type f \( -name '*.jpg' -o -name '*.png' \) \
+    | fzf --preview "$prev_cmd")
+    
+[ -n "$img" ] && setbg "$img"

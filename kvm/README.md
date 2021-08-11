@@ -3,7 +3,7 @@ QEMU/KVM script examples
 ## Scripts
 
 - QEMU
-	- `vm`
+	- `vm-start`
 		- Reference to build a new script
 
 		*or*

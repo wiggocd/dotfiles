@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+setterm --blank force
+
+trap restore SIGINT
+restore() {
+	setterm --blank poke
+}
+
+read -sn1 res
+restore

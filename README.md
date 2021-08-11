@@ -77,7 +77,7 @@ All packages are listed assuming acces to the main/extra Arch Linux repos and Ar
 
 ## Documentation
 
-To use this for your own desktop configuration, there are some useful scripts in the `dev` directory:
+To use this for your own desktop configuration, there are some useful scripts in the `util` directory:
 
 - `getversions`
 	- Read pacman package versions for a specified list of packages into a file

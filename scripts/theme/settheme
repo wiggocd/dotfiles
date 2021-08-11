@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+XSD="$XDG_CONFIG_HOME/xsettingsd"
+XSD_CONF="$XSD/xsettingsd.conf"
+XSD_DARK="$XSD/dark.conf"
+XSD_LIGHT="$XSD/light.conf"
+XSD_LOG="$XSD/log"
+
+CODE_CONF="$XDG_CONFIG_HOME/Code - OSS/User/settings.json"
+CODE_DARK="Dark+ Tweaked"
+CODE_LIGHT="Solarized Light"
+
+err() {
+    echo "$1"
+    exit $2
+}
+
+setdark() {
+    [ -e "$XSD_DARK" ] \
+        || err "No xsettings dark config found" 1
+    ln -sf "$XSD_DARK" "$XSD_CONF"
+
+    CODE_UI="$CODE_DARK" setcode
+    launchxsd
+}
+
+setlight() {
+    [ -e "$XSD_LIGHT" ] \
+        || err "No xsettings light config found" 1
+    ln -sf "$XSD_LIGHT" "$XSD_CONF"
+
+    CODE_UI="$CODE_LIGHT" setcode
+    launchxsd
+}
+
+toggle() {
+    if [ "$(readlink -- $XSD_CONF)" == "$XSD_LIGHT" ]; then
+        setdark
+    else
+        setlight
+    fi
+}
+
+setcode() {
+    if [ -w "$CODE_CONF" ]; then
+        jq ".[\"workbench.colorTheme\"]=\"${CODE_UI}\"" "$CODE_CONF" | sponge "$CODE_CONF"
+    fi
+}
+
+launchxsd() {
+    relaunch xsettingsd &>"$XSD_LOG" disown %1
+}
+
+case $1 in
+    dark)
+        setdark ;;
+    light)
+        setlight ;;
+    toggle)
+        toggle ;;
+esac

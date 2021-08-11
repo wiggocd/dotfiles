@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# $1 ...: command to relaunch
+ARGS="$@"
+LIST=$(pgrep -fx -u $USER "$ARGS") \
+    || LIST=$(pgrep -u $USER "$1")
+if [ -n "$LIST" ]; then
+	for proc in "$LIST"; do
+		kill $proc
+	done
+	
+	while pgrep -fx -u $USER "$ARGS" || pgrep -u $USER "$1" >/dev/null;
+	    do sleep 0.5; done
+fi
+
+$@ &
+[ -z "$(jobs)" ] || disown %1
