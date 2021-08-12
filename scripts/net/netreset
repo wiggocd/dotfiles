@@ -10,4 +10,4 @@ else
 	$SUDO $com
 fi
 
-[ $? == 0 ] && ( echo "Starting network test..."; $HOME/scripts/pingtest )
+[ $? == 0 ] && ( echo "Starting network test..."; pingtest )

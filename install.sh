@@ -97,6 +97,15 @@ install_locker() {
     fi
 }
 
+install_services() {
+    SCTL=$(which systemctl) \
+        || (echo "No systemd executable in path"; return 1)
+    $SCTL enable --user env-metadata.service
+
+    sudo cp config/systemd/userthemes@.service /etc/systemd/system/usethemes@.service && \
+    sudo $SCTL enable userthemes@${SUDO_USER}.service
+}
+
 firefox_config() {
 	FFROOT="$HOME"/.mozilla/firefox
 	
@@ -168,6 +177,13 @@ install_config() {
 	if [ "$res" == "y" ]; then
 		echo "Installing tmux configuration..."
 		install_tmux_conf
+	fi
+
+	echo -e "\nInstall the recommended root systemd services? (Required for automatic theming after suspend)"
+	input "(y/N) " res
+	if [ "$res" == "y" ]; then
+        echo "Installing systemd services..."
+        install_services
 	fi
 
 	echo -e "\nInstall Firefox configuration?" \

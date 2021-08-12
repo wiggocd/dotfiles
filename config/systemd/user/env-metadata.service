@@ -1,0 +1,10 @@
+[Unit]
+Description=Update systemd EnvironmentFile for user
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env bash -c ". %h/.profile && /usr/bin/env > /run/user/%U/systemd/envfile"
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target

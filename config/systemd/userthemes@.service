@@ -1,0 +1,10 @@
+[Unit]
+Description=Resume user desktop theme scheduler
+After=suspend.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env systemctl restart --machine=%i@.host --user theme-scheduler.service
+
+[Install]
+WantedBy=suspend.target

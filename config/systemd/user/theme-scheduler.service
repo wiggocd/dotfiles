@@ -1,0 +1,8 @@
+[Unit]
+Description=Relaunch desktop theme scheduler
+Requires=default.target
+
+[Service]
+Type=simple
+EnvironmentFile=/run/user/%U/systemd/envfile
+ExecStart=/usr/bin/env relaunch schedule_themes

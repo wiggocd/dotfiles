@@ -48,7 +48,7 @@ setcode() {
 }
 
 launchxsd() {
-    relaunch xsettingsd &>"$XSD_LOG" disown %1
+    relaunch xsettingsd &>"$XSD_LOG" &
 }
 
 case $1 in

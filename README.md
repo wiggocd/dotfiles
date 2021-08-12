@@ -46,19 +46,11 @@ Configuration for Arch Linux
 
 ## Dependencies and Packages
 
-All packages are listed assuming acces to the main/extra Arch Linux repos and Arch User Repository
+See `PACKAGES` for the complete list.
 
-**Dependencies**
+All packages are listed assuming acces to the main/extra Arch Linux repos and Arch User Repository.
 
-`bash coreutils git curl tar i3-gaps rofi picom-ibhagwan-git polybar fontconfig feh`
-
-**Recommended packages**
-
-`sudo pikaur zsh autotiling alacritty kitty tmux firefox vim micro ttf-droid grml-zsh-config lxappearance physlock xorg-xset xss-lock xorg-xbacklight redshift-gtk autorandr zsh-theme-powerlevel10k-git papirus-icon-theme`
-
-**Other packages, including programs and utilities used**
-
-`lxsession libinput-gestures xorg-xrandr visual-studio-code-bin mpd mpd-mpris mpc ncmpcpp pulseaudio pavucontrol networkmanager libqalculate`
+Extra utilities that I personally use can be found in `EXTRA`.
 
 ## Installation
 
@@ -74,6 +66,25 @@ All packages are listed assuming acces to the main/extra Arch Linux repos and Ar
 	- Arch Linux x86_64 5.12.14
 - Packages
 	- See `VERSIONS`
+
+## Location and Privacy
+
+For privacy, I block auto geolocation and spoof my location to the centre of the country which I live in when necessary.
+
+For redshift and theme scheduling to function correctly, you can do the following:
+    - Add any coordinates in your timezone to `~/.config/locations`
+        - Format: `(-)LAT:(-)LONG`
+    - Create a symlink at `~/.config/locations/current` to your current approximated location
+
+## Firefox
+
+Static approximate location patches are required as stated above for Firefox autotheming to function.
+
+Extensions used:
+    - [automaticDark](https://github.com/skhzhang/time-based-themes) - automatic themes
+    - [Dark Reader](https://darkreader.org) - automatic themes
+    - [Oildrop](https://github.com/shinzlet/oildrop) - userscripts
+    - [uBlock Origin](https://github.com/gorhill/uBlock#ublock-origin) - content blocker, with lighter sites whitelisted
 
 ## Documentation
 

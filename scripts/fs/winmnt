@@ -1,0 +1,11 @@
+#!/bin/bash
+
+mnt=/mnt
+
+if mountpoint -q "$mnt"; then
+	sudo umount "$mnt"
+fi
+
+sudo mount -t cifs //192.168.4.48/A $mnt \
+-o user='Kriss Wiggins',pass='a3tEr01Ds',\
+vers=1.0,sec=ntlm,gid=wheel,dir_mode=0775,file_mode=0775
