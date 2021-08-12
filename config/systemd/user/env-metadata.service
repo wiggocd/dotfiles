@@ -3,7 +3,7 @@ Description=Update systemd EnvironmentFile for user
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/env bash -c ". %h/.profile && /usr/bin/env > /run/user/%U/systemd/envfile"
+ExecStart=/usr/bin/env bash -c ". %h/.profile && /usr/bin/env > /run/user/%U/envfile"
 RemainAfterExit=yes
 
 [Install]

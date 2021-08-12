@@ -1,15 +1,10 @@
 #!/usr/bin/env bash
 
-LOCSTRING="$(fmt_helio_location < $XDG_CONFIG_HOME/locations/current)"
-HELIO="$(which heliocron)"
-COM="$(which settheme)"
-
-read -r -d '' LINES <<-EOF
-0 0     * * * $HELIO $LOCSTRING wait --event sunrise;    $COM light
-0 12    * * * $HELIO $LOCSTRING wait --event sunset;     $COM dark
+read -r -d '' LINES <<-'EOF'
+0 0 * * * $HOME/.local/scripts/launchenv relaunch schedule_themes
 EOF
 
 crontab -l \
-    | grep -i settheme \
+    | grep -i 'schedule_themes' \
     | echo "$LINES" \
     | crontab -

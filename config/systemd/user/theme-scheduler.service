@@ -4,5 +4,5 @@ Requires=default.target
 
 [Service]
 Type=simple
-EnvironmentFile=/run/user/%U/systemd/envfile
+EnvironmentFile=/run/user/%U/envfile
 ExecStart=/usr/bin/env relaunch schedule_themes

@@ -104,6 +104,13 @@ install_services() {
 
     sudo cp config/systemd/userthemes@.service /etc/systemd/system/usethemes@.service && \
     sudo $SCTL enable userthemes@${SUDO_USER}.service
+
+    echo -e "\nUpdate crontab for autotheming? (Requires cron implementation)"
+    input "(y/N) " res
+    if [ "$res" == "y" ]; then
+        echo "Updating crontab..."
+        crontab_schedule_themes
+    fi
 }
 
 firefox_config() {
@@ -195,7 +202,7 @@ install_config() {
 	fi
 
 	echo -e "\n** Installed dotfiles. **" \
-            "\nRestart your shell to launch into a usable state." \
+            "\nRestart your system to launch into a usable state." \
 			"\nRun \`setbg <path to image>\` to change your desktop background." \
 			"\nYou may also now use a tool such as lxappearance to customise GTK and other theming options <3"
 }

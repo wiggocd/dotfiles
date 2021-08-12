@@ -48,7 +48,7 @@ setcode() {
 }
 
 launchxsd() {
-    relaunch xsettingsd &>"$XSD_LOG" &
+    killall -u $USER -HUP xsettingsd
 }
 
 case $1 in

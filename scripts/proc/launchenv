@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+source /run/user/$(id -u $USER)/envfile && exec $@
