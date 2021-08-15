@@ -1,0 +1,11 @@
+[Unit]
+Description=Configure X server for external graphics
+Before=multi-user.target
+Requires=basic.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/autoxgpu "%i"
+
+[Install]
+WantedBy=multi-user.target

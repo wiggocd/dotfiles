@@ -14,11 +14,11 @@ xrandr --auto
 if [ -f "$XRES" ]; then
     xrdb -merge "$XRES"; fi
     
-if [ -f "$RANDRLOCK" ]; then
+if [ ! -f "$RANDRLOCK" ]; then
     autorandr -c; fi
 
-relaunch picom      --config $XDG_CONFIG_HOME/picom/picom.conf --backend glx &
-relaunch polybar    -q main -c $XDG_CONFIG_HOME/polybar/config.ini &
+relaunch picom      --config $XDG_CONFIG_HOME/picom/picom.conf &
+relaunch polybar    main -c $XDG_CONFIG_HOME/polybar/config.ini &
 
 relaunch python3 $LIBINPUTG &
 relaunch autotiling         &
@@ -34,7 +34,7 @@ if [ -x "$HOME/.fehbg" ]; then
 fi
     
 if [ -n "$LOC" ]; then
-    relaunch redshift -l $LOC -m vidmode &
+    relaunch redshift -l $LOC -m randr &
 fi
 
 firefox_static_location

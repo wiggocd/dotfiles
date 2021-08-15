@@ -221,8 +221,8 @@ bindsym $mod+r mode "resize"
 #}
 
 # gaps
-gaps inner 12
-gaps outer 12
+gaps inner 8
+gaps outer 4
 
 # ref card
 bindsym $mod+Escape exec --no-startup-id xdg-open https://i3wm.org/docs/refcard.html
@@ -239,6 +239,9 @@ for_window  [class="(?i)firefox" \
             title="(?i)Picture-in-Picture"] sticky enable
 
 no_focus    [class="feh-popup"]
+
+client.focused      #a98d6b #a98d6b #a98d6b #a98d6b
+client.unfocused    #000000 #000000 #000000 #000000
 
 # autostart
 exec_always --no-startup-id $AUTOSTART
