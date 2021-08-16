@@ -7,10 +7,12 @@
 #	git
 
 DESKTOP_THEME_GIT="https://github.com/vinceliuice/ChromeOS-theme"
-CURSOR_THEME_BIN="https://github.com/ful1e5/apple_cursor/releases/latest/download/macOSBigSur.tar.gz"
-LOCKER_GIT="https://github.com/rainbowgoth/sxlock"
 FF_THEME_GIT="https://github.com/muckSponge/MaterialFox"
-TPM="https://github.com/tmux-plugins/tpm"
+TPM_GIT="https://github.com/tmux-plugins/tpm"
+
+CURSOR_THEME_BIN="https://github.com/ful1e5/apple_cursor/releases/latest/download/macOSBigSur.tar.gz"
+
+LOCKER_GIT="https://github.com/rainbowgoth/sxlock"
 
 input() {
 	local -n ref=$2
@@ -34,21 +36,24 @@ copy() {
 	mkdir -p "$HOME"/.local/share/fonts
 	cp -R fonts/* "$HOME"/.local/share/fonts
 
-	for file in shell/* X/*; do
-		cp "$file" "$HOME/.$(basename $file)"
+	for file in home/* xorg/*; do
+        if [ -f "$file" ]; then
+            cp "$file" "$HOME/.$(basename $file)"
+        fi
 	done
 	
 	chmod +x "$HOME"/scripts/*
 }
 
 post_copy() {
-	input "Set the default wallpaper now? (Y/n) " res
+    "$HOME"/scripts/update-scripts
+    
+    input "Set the default wallpaper now? (Y/n) " res
 	if [ -n "${DISPLAY-}" ] && [[ -z "$res" || "${res^^}" == 'Y' ]]; then
-		scripts/theme/setbg "$HOME"/Pictures/Wallpaper/default
+		setbg "$HOME/Pictures/Wallpaper/default"
 	fi
 	
 	fc-cache -f
-	"$HOME"/scripts/update-scripts
 }
 
 install_themes() {
@@ -79,7 +84,7 @@ install_tmux_conf() {
 		ln -s "$XDG_CONFIG_HOME"/tmux/tmux.conf "$HOME"/.tmux.conf
 	fi
 
-	git clone "$TPM" "$HOME"/.tmux/plugins/tpm && \
+	git clone "$TPM_GIT" "$HOME"/.tmux/plugins/tpm && \
 	echo -e "\n** Type <Prefix> Shift+I in tmux to install the provided themes/packages. **" \
 			"\n(Default prefix for this config is M-a [Alt+A])"
 }
@@ -102,8 +107,9 @@ install_services() {
         || (echo "No systemd executable in path"; return 1)
     $SCTL enable --user env-metadata.service
 
-    sudo cp config/systemd/userthemes@.service /etc/systemd/system/usethemes@.service && \
-    sudo $SCTL enable userthemes@${SUDO_USER}.service
+    sudo sh -c \
+        "cp system/userthemes@.service /etc/systemd/system && \
+        $SCTL "'enable userthemes@${SUDO_USER}.service'
 
     echo -e "\nUpdate crontab for autotheming? (Requires cron implementation)"
     input "(y/N) " res
@@ -203,8 +209,8 @@ install_config() {
 
 	echo -e "\n** Installed dotfiles. **" \
             "\nRestart your system to launch into a usable state." \
-			"\nRun \`setbg <path to image>\` to change your desktop background." \
-			"\nYou may also now use a tool such as lxappearance to customise GTK and other theming options <3"
+			"\nRun \`setbg <path to image>' to change your desktop background." \
+			"\nYou may now also use a tool such as lxappearance to customise GTK and other theming options <3"
 }
 
 echo -e "** Linux dotfiles configuration script **

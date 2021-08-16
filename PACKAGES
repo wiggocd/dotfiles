@@ -20,6 +20,7 @@ gnu-free-fonts
 grml-zsh-config
 heliocron-git
 i3-gaps
+inotify-tools
 kitty
 libinput-gestures
 linux
@@ -49,6 +50,7 @@ tmux
 ttf-droid
 ttf-liberation
 ttf-windows
+ueberzug
 vim
 xclip
 xorg-fonts-alias-misc

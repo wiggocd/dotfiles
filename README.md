@@ -50,8 +50,6 @@ See `PACKAGES` for the complete list.
 
 All packages are listed assuming acces to the main/extra Arch Linux repos and Arch User Repository.
 
-Extra utilities that I personally use can be found in `EXTRA`.
-
 ## Installation
 
 - Feel free to copy the files manually, where `config` maps to `$XDG_CONFIG_HOME` and `scripts` maps to `$HOME/scripts`, etc...

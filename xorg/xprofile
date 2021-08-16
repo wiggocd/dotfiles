@@ -1,0 +1,7 @@
+export QT_QPA_PLATFORMTHEME="qt5ct"
+export TERMINAL="alacritty"
+
+export RANDR_LOCK="/run/user/$UID/randr.lock"
+export LOCK_DISABLED="/run/user/$UID/disable.lock"
+
+source $HOME/.profile

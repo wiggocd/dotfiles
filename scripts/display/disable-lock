@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
 LOCKER=xss-lock
+[ -n "${LOCK_DISABLED}" ] || export LOCK_DISABLED="/run/user/$UID/disable.lock"
 
 xset -dpms
 xset s off
 ps -C $LOCKER >/dev/null && killall $LOCKER || true
+
+if [ -z "${1-}" ]; then
+    touch "$LOCK_DISABLED"; fi

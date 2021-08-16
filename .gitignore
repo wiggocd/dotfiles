@@ -1,0 +1,12 @@
+./config/gtk-*/bookmarks
+./config/gtk-*/servers
+./config/systemd/*/*.wants
+./config/xsettingsd/xsettings.conf
+./config/locations/current
+./config/tmux/plugins
+./config/micro/plug
+./config/micro/buffers
+./config/micro/backup
+
+./scripts/localfs
+./scripts/vm

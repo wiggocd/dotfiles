@@ -2,6 +2,11 @@
 
 EXEC=$(basename $0)
 
+err() {
+    echo "$1">&2
+    exit $2
+}
+
 usage() {
 	expand --tabs=4 <<-EOF
 	usage: $EXEC [options] DIRECTORY
@@ -15,13 +20,13 @@ usage() {
 while getopts ":h" opt; do
 	case $opt in
 		h)	usage; exit 0 ;;
-		*)	echo "Invalid option -$OPTARG, run \`$EXEC -h\` to show usage" >&2;
+		*)	echo "Invalid option -$OPTARG, run \`$EXEC -h\' to show usage" >&2;
 			exit 1 ;;
 	esac
 done
 
 shift $((OPTIND-1))
-[ -n "${1-}" ] || (echo "Directory not specified" >&2; exit 1)
+[ -n "${1-}" ] || err "Directory not specified" 1
 
 PWD=$(pwd)
 DIRECTORY="$PWD"/"$1"

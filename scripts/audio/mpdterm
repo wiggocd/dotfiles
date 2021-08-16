@@ -1,0 +1,24 @@
+#!/bin/sh
+
+DIM=$(xdpyinfo | awk '/dimensions:/ { print $2 }')
+SPLIT=($(echo "$DIM" | sed 's/x/ /'))
+
+col=82
+lin=20
+off=16
+
+w=${SPLIT[0]}
+h=${SPLIT[1]}
+x=$(( w - (col*8) - off ))
+y=$(( h - (lin*14) - off ))
+
+EXEC=$(which music)
+alacritty   -o "window.dimensions: \
+            {'columns': 82, lines: 20}" \
+            -o "window.position: \
+            {'x': ${x}, 'y': ${y}}" \
+            -o "window.class: \
+            {'instance': 'music'}" \
+            -o "window.padding: \
+            {'x': 4, 'y': 4}" \
+            -e "$EXEC"

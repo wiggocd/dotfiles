@@ -1,0 +1,4 @@
+source /etc/profile
+
+export SCRIPTS="$HOME/.local/scripts"
+export PATH="$HOME/.local/bin:$SCRIPTS:$PATH"

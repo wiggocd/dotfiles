@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# args: prefix, replacement prefix, extension
+if [ -n "${3-}" ]; then
+	total=$(ls -fa "${1}"*."${3}" | wc -l)
+	if [ $? == 0 ]; then
+		i=1
+		for f in "${1}"*."${3}"; do
+			echo $f
+			mv "$f" ${2}_${i}of${total}.${3}
+			i=$((i+1))
+		done
+	fi
+fi

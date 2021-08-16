@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+# ** Reformat music cover art filenames recursively for the current directory
+
+echo "This script can cause data loss due to file/directory tree replacement."
+echo "Ensure you have a backup first."
+printf "Continue? (y/N) "
+read res
+[ "$res" == 'y' ] || exit
+echo
+
+# Convert png to jpg
+find . -name \*.png -print0 | \
+while IFS= read -r -d '' f; do
+    convert "$f" "$(dirname $f)/$(basename $f png)jpg"
+done
+
+# Rename covers to folder.jpg
+find . -type f \( -name cover.jpg \ 
+                -o -name Cover.jpg \
+                -o -name front.jpg \
+                -o -name Front.jpg \) -print0 | \
+while IFS= read -r -d '' f; do
+    mv "$f" "$(dirname $f)/folder.jpg"
+done
+
+# Move other images into .nomedia subdirectories
+find . -name \*.jpg -print0 | \
+while IFS= read -r -d '' f; do
+    if [ "$(basename $f)" != "folder.jpg" ] \
+        && [ "$(basename "$(dirname $f)")" != ".nomedia" ]); then
+        mkdir -p "$(dirname $f)/.nomedia"
+        mv "$f" "$(dirname $f)/.nomedia/$(basename $f)")
+    fi
+done

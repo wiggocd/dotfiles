@@ -1,6 +1,0 @@
-export QT_QPA_PLATFORMTHEME="qt5ct"
-export TERMINAL="alacritty"
-export RANDRLOCK="/run/user/$UID/randr.lock"
-export KDECONNECT=$(whereis -b kdeconnectd | sed '1 s/^.*: //')
-source $HOME/.profile
-systemctl --user import-environment PATH

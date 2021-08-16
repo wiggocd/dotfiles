@@ -1,4 +1,5 @@
 {
     "colorscheme": "one-dark-alt",
-    "eofnewline": false
+    "eofnewline": false,
+    "tabstospaces": true
 }
