@@ -1,7 +1,0 @@
-#!/bin/bash
-
-mouse_path=$(ls -d /dev/input/by-id/* | fzf)
-[[ -z "${mouse_path}" ]] && exit
-echo "Selected mouse: ${mouse_path}"
-sudo mkdir -p /var/lib/libvirt/inputs
-sudo ln -sf "${mouse_path}" /var/lib/libvirt/inputs/event-mouse0

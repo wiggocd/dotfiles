@@ -1,7 +1,0 @@
-#!/bin/bash
-
-keyboard_path=$(ls -d /dev/input/by-id/* | fzf)
-[[ -z "${keyboard_path}" ]] && exit
-echo "Selected keyboard: ${keyboard_path}"
-sudo mkdir -p /var/lib/libvirt/inputs
-sudo ln -sf "${keyboard_path}" /var/lib/libvirt/inputs/event-kbd0
