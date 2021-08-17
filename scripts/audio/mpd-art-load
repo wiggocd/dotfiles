@@ -43,7 +43,7 @@ fallback_find_cover() {
 
 mpris_album_art() {
     # player metadata mpris:artUrl | sed 's#file://##'
-    player metadata | grep -Po '^.*mpris:artUrl.*file://\K.*$'
+    player metadata | grep -Po '^.*mpris:artUrl.*file://\K.*/mpd.*/.*$'
     # mpris_player_control -t | grep 'artUrl' | cut -f 3 -d '|' | sed 's#file://##'
 }
 
@@ -60,7 +60,8 @@ main() {
     [ ! -x "$(which playerctl)" ] && echo "Install playerctl and mpDris2 for this script to work."
 
     # ffmpeg_cover "$(mpris_album_art)" && rounded_cover
-    ffmpeg_cover "$(mpris_album_art)" || exit 0
+    art=$(mpris_album_art)
+    ffmpeg_cover "$art" || exit
     notification
 }
 

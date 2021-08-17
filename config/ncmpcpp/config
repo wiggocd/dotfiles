@@ -319,7 +319,7 @@
 ## Note: Custom command that will be executed each time song changes. Useful for
 ## notifications etc.
 ##
-execute_on_song_change = "mpd-art-load"
+execute_on_song_change = "mpd-art-load >/dev/null"
 #
 ##
 ## Note: Custom command that will be executed each time player state
@@ -327,7 +327,7 @@ execute_on_song_change = "mpd-art-load"
 ## state (either unknown, play, pause, or stop) for its duration.
 ##
 #
-execute_on_player_state_change = "mpd-art-load"
+execute_on_player_state_change = "mpd-art-load >/dev/null"
 #
 #playlist_show_mpd_host = no
 #
