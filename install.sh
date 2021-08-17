@@ -103,12 +103,18 @@ install_locker() {
 }
 
 install_services() {
-    SCTL=$(which systemctl) \
-        || (echo "No systemd executable in path"; return 1)
-    $SCTL enable --user env-metadata.service
+    SCTL=$(which systemctl)
+    if [ ! $? ]; then
+        echo "No systemd executable in path"; return 1
+    fi
+        
+    if [ -z "${USER-}" ]; then
+        echo "User variable not set"; return 1
+    fi
 
     sudo sh -c \
-        "cp system/userthemes@.service /etc/systemd/system && \
+        "$SCTL enable --machine=${USER}@.host --user env-metadata.service && \
+        cp system/userthemes@.service /etc/systemd/system && \
         $SCTL "'enable userthemes@${SUDO_USER}.service'
 
     echo -e "\nUpdate crontab for autotheming? (Requires cron implementation)"
