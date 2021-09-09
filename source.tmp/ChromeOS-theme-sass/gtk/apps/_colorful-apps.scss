@@ -1,0 +1,819 @@
+// /***** color-palette *****/
+$theme_red:         #D93025;
+$theme_light_red:   #FF1744;
+$theme_pink:        #E91E63;
+$theme_purple:      #9C27B0;
+$theme_deep_purple: #673AB7;
+$theme_indigo:      #3949AB;
+$theme_blue:        #0091EA;
+$theme_light_blue:  #0288D1;
+$theme_cyan:        #5E35B1;
+$theme_dark_cyan:   #4769d2;
+$theme_teal:        #188c75;
+$theme_green:       #4CAF50;
+$theme_sea_green:   #6ab878;
+$theme_lime:        #C0CA33;
+$theme_yellow:      #FFD600;
+$theme_dark_yellow: #F57F17;
+$theme_amber:       #FFA000;
+$theme_orange:      #FF6D00;
+$theme_deep_orange: #F4511E;
+$theme_brown:       #6D4C41;
+$theme_grey:        #424242;
+$theme_dark_grey:   #323232;
+$theme_blue_grey:   #37474F;
+$theme_green_grey:  #3b4342;
+// /***** color-palette *****/
+
+// Some color theme stuff
+@mixin color_theme($check_rules: 'true',
+                   $switch_rules: 'true',
+                   $view_rules: 'true',
+                   $entry_rules: 'true',
+                   $button_rules: 'true',
+                   $scale_rules: 'true',
+                   $theme_color: $primary,
+                   $theme_indicator: if($topbar == 'dark', currentColor, $theme_color)) {
+  @if $check_rules=='true' {
+    check, radio {
+      &:checked, &:indeterminate {
+        color: $theme_color;
+      }
+    }
+
+    radio {
+      & {
+        border-image-source: -gtk-gradient(radial,
+                                           center center, 0,
+                                           center center, 0.001,
+                                           to($theme_color),
+                                           to(transparent));
+      }
+
+      &:checked:not(:indeterminate) {
+        border-image-source: -gtk-gradient(radial,
+                                           center center, 0,
+                                           center center, (10px / $check_radio_size / 2),
+                                           to($theme_color),
+                                           to(transparent));
+      }
+    }
+  }
+
+  @if $switch_rules=='true' {
+    switch {
+      &:checked { background-color: rgba($theme_color, 0.5); }
+
+      &:checked slider {
+        background-color: $theme_color;
+        color: $theme_color;
+      }
+    }
+  }
+
+  @if $view_rules=='true' {
+    .view {
+      &:selected:hover { box-shadow: inset 0 0 0 9999px rgba($theme_color, 0.08); }
+    }
+  }
+
+  @if $entry_rules=='true' {
+    entry, spinbutton:not(.vertical) {
+      &:focus { @include entry(checked, $fc: $theme_color); }
+
+      selection {
+        color: on($theme_color);
+        background-color: $theme_color;
+      }
+    }
+
+    label {
+      selection {
+        color: on($theme_color);
+        background-color: $theme_color;
+      }
+    }
+
+    headerbar {
+      entry, spinbutton:not(.vertical) {
+        &:focus { @include entry(checked, $fc: $theme_indicator); }
+
+        selection {
+          color: if($topbar == 'dark', $theme_color, on($theme_color));
+          background-color: if($topbar == 'dark', white, $theme_color);
+        }
+      }
+
+      label {
+        selection {
+          color: if($topbar == 'dark', $theme_color, on($theme_color));
+          background-color: if($topbar == 'dark', white, $theme_color);
+        }
+      }
+    }
+  }
+
+  @if $button_rules=='true' {
+    button:not(.flat):not(.combo):not(.popup):not(.title-button):not(.down):not(.up):not(.toggle):not(.radio) {
+      &:checked {
+        color: on($theme_color);
+        background-color: $theme_color;
+      }
+
+      &:focus:not(:hover) {
+        box-shadow: 0 0 0 2px rgba($theme_color, 0.28);
+      }
+
+      &:checked:disabled {
+        @include button(checked-disabled);
+      }
+    }
+
+    button.combo {
+      &:checked {
+        @include entry(checked, $fc: $theme_color);
+        background-color: $fill;
+        color: $text;
+      }
+    }
+
+    stackswitcher > button:not(.suggested-action):not(.destructive-action):not(.flat):not(.combo):not(.title-button) { // reset stackswitcher buttons
+      border-image: radial-gradient(circle closest-corner at center calc(100% - 1px),
+                                    $theme_color 0%,
+                                    transparent 0%)
+                                    0 0 0 / 0 0 0px;
+
+      &:checked {
+        border-image: radial-gradient(circle closest-corner at center calc(100% - 1px),
+                                      $theme_color 100%,
+                                      transparent 0%)
+                                      0 0 2 / 0 0 2px;
+        background-color: $fill;
+        color: $text;
+      }
+
+      &:focus:not(:hover) {
+        box-shadow: none;
+      }
+    }
+
+    headerbar.titlebar {
+      button:not(.flat):not(.combo):not(.title-button) { // reset headerbar buttons
+        &:checked {
+          background-color: if($topbar == 'dark', rgba(black, 0.2), rgba(black, 0.1));
+          color: $titlebar-text;
+        }
+
+        &:focus:not(:hover) {
+          box-shadow: 0 0 0 2px rgba($titlebar-text, 0.15);
+        }
+      }
+
+      button:not(.flat):not(.combo):not(.popup):not(.title-button):not(.down):not(.up):not(.toggle).radio {
+        &:checked {
+          background-color: if($topbar == 'dark', rgba(black, 0.2), rgba(black, 0.1));
+          color: $titlebar-text;
+        }
+
+        &:focus:not(:hover) {
+          box-shadow: none;
+        }
+      }
+
+      viewswitcher button:not(.titlebutton):not(.suggested-action):not(.destructive-action),
+      stackswitcher > button:not(.suggested-action):not(.destructive-action):not(.flat):not(.combo):not(.title-button) { // reset stackswitcher buttons
+        border-image: radial-gradient(circle closest-corner at center calc(100% - 1px),
+                                      $theme_indicator 0%,
+                                      transparent 0%)
+                                      0 0 0 / 0 0 0px;
+
+        &:checked {
+          border-image: radial-gradient(circle closest-corner at center calc(100% - 1px),
+                                        $theme_indicator 100%,
+                                        transparent 0%)
+                                        0 0 2 / 0 0 2px;
+          background-color: $titlebar-fill;
+          color: $titlebar-text;
+        }
+
+        &:focus:not(:hover) {
+          box-shadow: none;
+        }
+      }
+    }
+
+    .path-bar.linked:not(.vertical) > button:not(.suggested-action):not(.destructive-action):not(.flat):not(.combo) { // reset path-bar buttons
+      &:focus:not(:hover) {
+        box-shadow: 0 0 0 2px transparent;
+      }
+
+      &:checked {
+        color: $text;
+        &, &:disabled { background-color: transparent; }
+      }
+    }
+  }
+
+  @if $scale_rules=='true' {
+    scale {
+      highlight {
+        background-image: image($theme_color);
+      }
+
+      slider { color: $theme_color; }
+    }
+  }
+}
+
+//
+// Terminal
+//
+
+$terminal_header: if($topbar == 'light', $titlebar, $theme_sea_green);
+
+terminal-window {
+  @include color_theme($theme_color:$theme_sea_green);
+
+  > headerbar.titlebar {
+    background-color: $terminal_header;
+    box-shadow: inset 0 1px highlight($terminal_header), inset 0 -1px $divider;
+
+    &:backdrop { background-color: darken($terminal_header, 2%); }
+  }
+
+  notebook {
+    &:focus tab:checked {
+      box-shadow: inset 0 0 0 9999px rgba($theme_sea_green, 0.12);
+    }
+
+    > header {
+      &.top {
+        > tabs {
+          > tab {
+            border-image: linear-gradient(to top, transparent 2px, transparent 2px) 2 / 0 0 2px;
+
+            &:checked { border-image-source: linear-gradient(to top, $theme_sea_green 2px, $frame 2px); }
+          }
+        }
+      }
+
+      tab {
+        background-image: radial-gradient(circle, rgba($theme_sea_green, 0.35) 10%, transparent 0%);
+
+        &:checked {
+          background-image: radial-gradient(circle, transparent 10%, transparent 0%);
+        }
+      }
+    }
+  }
+}
+
+//
+// Gedit
+//
+
+$gedit_header: if($topbar == 'light', $titlebar, $theme_amber);
+
+window.org-gnome-gedit {
+  > paned.titlebar {
+    background-color: $gedit_header;
+    box-shadow: inset 0 1px highlight($gedit_header), inset 0 -1px $divider;
+
+    &:backdrop { background-color: darken($gedit_header, 2%); }
+
+    > separator {
+      background-image: image($gedit_header);
+      border-top: 1px solid transparent;
+    }
+  }
+
+  notebook {
+    &:focus tab:checked {
+      box-shadow: inset 0 0 0 9999px rgba($theme_amber, 0.12);
+    }
+
+    > header {
+      &.top {
+        > tabs {
+          > tab {
+            border-image: linear-gradient(to top, transparent 2px, transparent 2px) 2 / 0 0 2px;
+
+            &:checked { border-image-source: linear-gradient(to top, $theme_amber 2px, $frame 2px); }
+          }
+        }
+      }
+
+      tab {
+        background-image: radial-gradient(circle, rgba($theme_amber, 0.35) 10%, transparent 0%);
+
+        &:checked {
+          background-image: radial-gradient(circle, transparent 10%, transparent 0%);
+        }
+      }
+    }
+  }
+
+  @include color_theme($theme_color:$theme_amber);
+}
+
+//
+// Gnome Contacts
+//
+
+$contacts_header: if($topbar == 'light', $titlebar, $theme_indigo);
+
+headerbar.titlebar.contacts-left-header-bar,
+headerbar.titlebar.contacts-right-header-bar { // 3.22
+  background-color: $contacts_header;
+}
+
+window.background.csd {
+  > deck > box > leaflet {
+    > headerbar {
+      background-color: $contacts_header;
+
+      &:backdrop { background-color: darken($contacts_header, 2%); }
+    }
+
+    > separator.sidebar {
+      background-color: $contacts_header;
+      box-shadow: inset 0 -1px $divider;
+
+      &:backdrop { background-color: darken($contacts_header, 2%); }
+    }
+  }
+}
+
+hdyleaflet, leaflet {
+  > stack > frame,
+  clamp.medium {
+    entry {
+      &:focus { @include entry(checked, $fc: $theme_indigo); }
+
+      selection {
+        color: on($theme_indigo);
+        background-color: $theme_indigo;
+      }
+    }
+  }
+}
+
+//
+// Gnome Calender
+//
+
+$calendar_header: if($topbar == 'light', $titlebar, $theme_green);
+
+window.org-gnome-Calendar {
+  @include color_theme($theme_color: $theme_green);
+
+  headerbar.titlebar {
+    background-color: $calendar_header;
+    box-shadow: inset 0 1px highlight($calendar_header), inset 0 -1px $divider;
+
+    &:backdrop { background-color: darken($calendar_header, 2%); }
+  }
+
+  > overlay,
+  > popover {
+    @include color_theme($theme_color: $theme_green);
+  }
+
+  mouthcell {
+    color: $text;
+  }
+}
+
+//
+// Gnome Tweak Tool (Gnome Tweaks)
+//
+
+$tweak_header: if($topbar == 'light', $titlebar, $theme_brown);
+
+window.background.csd {
+  > leaflet.titlebar, // >= 40.0
+  > hdyleaflet.titlebar {
+    > headerbar.titlebar.tweak-titlebar-left,
+    > headerbar.titlebar.tweak-titlebar-right {
+      background-color: $tweak_header;
+      box-shadow: inset 0 1px highlight($tweak_header), inset 0 -1px $divider;
+
+      &:backdrop { background-color: darken($tweak_header, 2%); }
+
+      switch {
+        &:checked { background-color: rgba(lighten($theme_brown, 25%), 0.5); }
+
+        &:checked slider {
+          background-color: lighten($theme_brown, 25%);
+          color: lighten($theme_brown, 25%);
+        }
+      }
+    }
+
+    > separator {
+      background-color: $tweak_header;
+    }
+  }
+
+  > leaflet > box.vertical,
+  > hdyleaflet > box.vertical {
+    > stack.main-container {
+      @include color_theme($theme_color:$theme_brown);
+    }
+  }
+}
+
+// the sidebar
+.tweak-category {
+  @extend %circular_side_row;
+
+  &:selected {
+    color: if($variant == 'light', $theme_brown, lighten($theme_brown, 35%));
+
+    image, label { color: if($variant == 'light', $theme_brown, lighten($theme_brown, 35%)); }
+  }
+}
+
+//
+// Gnome Control Center
+//
+
+$control_center_header: if($topbar == 'light', $titlebar, $theme_cyan);
+
+window.background.csd {
+  > headerbar.titlebar > leaflet,
+  > headerbar.titlebar > hdyleaflet {
+    > headerbar {
+      background-color: $control_center_header;
+      box-shadow: inset 0 1px highlight($control_center_header), inset 0 -1px $divider;
+
+      &:backdrop { background-color: darken($control_center_header, 2%); }
+
+      &:first-child:not(:only-child) {
+        border-top-left-radius: $window-radius;
+      }
+
+      &:last-child:not(:only-child) {
+        border-top-right-radius: $window-radius;
+      }
+
+      &:first-child:only-child, &:last-child:only-child {
+        border-top-right-radius: $window-radius;
+        border-top-left-radius: $window-radius;
+      }
+
+      > stackswitcher button:not(.suggested-action):not(.destructive-action).text-button { // reset stackswitcher buttons
+        border-image: radial-gradient(circle closest-corner at center calc(100% - 1px),
+                                      if($topbar == 'dark', currentColor, $theme_cyan) 0%,
+                                      transparent 0%)
+                                      0 0 0 / 0 0 0px;
+
+        &:checked {
+          border-image: radial-gradient(circle closest-corner at center calc(100% - 1px),
+                                        if($topbar == 'dark', currentColor, $theme_cyan) 100%,
+                                        transparent 0%)
+                                        0 0 2 / 0 0 2px;
+          background-color: transparent;
+        }
+      }
+
+      switch {
+        &:checked { background-color: rgba(lighten($theme_cyan, 25%), 0.5); }
+
+        &:checked slider {
+          background-color: lighten($theme_cyan, 25%);
+          color: lighten($theme_cyan, 25%);
+        }
+      }
+    }
+
+    > separator {
+      background-color: $control_center_header;
+      box-shadow: inset 0 1px highlight($control_center_header);
+    }
+  }
+
+  > leaflet > stack.background,
+  > hdyleaflet > stack.background {
+    @include color_theme($theme_color:$theme_cyan);
+
+    scale {
+      slider {
+        color: $theme_cyan;
+
+        @each $s, $as in ('', '') {
+          &#{$s} {
+            $_url: 'assets/scale-slider#{$as}#{$asset-suffix}-cyan';
+
+            background-image: -gtk-scaled(url('#{$_url}.png'), url('#{$_url}@2.png')),
+                              radial-gradient(circle, transparent 10%, transparent 0%);
+          }
+        }
+
+        &:active {
+          $_url: 'assets/scale-slider#{$asset-suffix}-cyan';
+          background-image: -gtk-scaled(url('#{$_url}.png'), url('#{$_url}@2.png')),
+                            radial-gradient(circle, $overlay-active 10%, transparent 0%);
+          background-size: auto, 0% 0%;
+        }
+      }
+    }
+  }
+
+  > leaflet > box.vertical,
+  > hdyleaflet > box.vertical {
+    > scrolledwindow.view {
+      > viewport.frame {
+        > stack {
+          entry.search {
+            &:focus { @include entry(checked, $fc: $theme_cyan); }
+
+            selection {
+              color: on($theme_cyan);
+              background-color: $theme_cyan;
+            }
+          }
+        }
+
+        > stack, > stack > box.vertical {
+          > list > row.activatable {
+            &:selected {
+              color: if($variant == 'light', $theme_cyan, lighten($theme_cyan, 35%));
+
+              image, label { color: if($variant == 'light', $theme_cyan, lighten($theme_cyan, 35%)); }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  > leaflet > box.vertical {
+    > searchbar { // on control center sidebar (also on gnome tweaks)
+      entry.search {
+        &, &:focus {
+          border-image: none;
+          box-shadow: none;
+          border-radius: $corner-radius;
+        }
+
+        &:focus { background-color: $divider; }
+
+        selection {
+          color: on($theme_cyan);
+          background-color: $theme_cyan;
+        }
+      }
+    }
+  }
+}
+
+//
+// Passwords and Keys (Seahorse)
+//
+
+window.background.csd {
+  > hdyleaflet > scrolledwindow {
+    > viewport.frame > list {
+      border-bottom-left-radius: $corner-radius;
+    }
+  }
+}
+
+//
+// Gnome Builder
+//
+
+$builder_header: if($topbar == 'light', $titlebar, $theme_grey);
+
+window.background.csd.org-gnome-Builder {
+  > stack.titlebar {
+    background-color: $builder_header;
+    box-shadow: inset 0 1px highlight($builder_header), inset 0 -1px $divider;
+
+    &:backdrop { background-color: darken($builder_header, 2%); }
+
+    > headerbar {
+      > box.horizontal > stack.suggestionbutton {
+        > button { @extend %button-flat; }
+      }
+    }
+  }
+
+  @include color_theme($theme_color:$theme_grey);
+}
+
+//
+// Gnome-system-monitor
+//
+
+$monitor_header: if($topbar == 'light', $titlebar, $theme_teal);
+
+window#gnome-system-monitor {
+  @include color_theme($theme_color: $theme_teal);
+
+  headerbar.titlebar {
+    background-color: $monitor_header;
+    box-shadow: inset 0 1px highlight($monitor_header), inset 0 -1px $divider;
+
+    &:backdrop { background-color: darken($monitor_header, 2%); }
+
+    > button.popup { border-radius: $circular-radius; }
+  }
+
+  treeview.view {
+    &.progressbar { // progress bar in treeviews
+      border-bottom: $bar-size solid $theme_teal;
+    }
+  }
+}
+
+//
+// Gnome-Todo
+//
+
+$todo_header: if($topbar == 'light', $titlebar, $theme_deep_orange);
+
+window.org-gnome-Todo {
+  headerbar.titlebar {
+    background-color: $todo_header;
+    box-shadow: inset 0 1px highlight($todo_header), inset 0 -1px $divider;
+
+    &:backdrop { background-color: darken($todo_header, 2%); }
+  }
+
+  @include color_theme($theme_color:$theme_deep_orange);
+}
+
+//
+// Dconf-editor
+//
+
+$dconf_header: if($topbar == 'light', $titlebar, $theme_purple);
+
+window.dconf-editor {
+  headerbar.titlebar {
+    background-color: $dconf_header;
+    box-shadow: inset 0 1px highlight($dconf_header), inset 0 -1px $divider;
+
+    &:backdrop { background-color: darken($dconf_header, 2%); }
+  }
+
+  @include color_theme($theme_color:$theme_purple);
+}
+
+//
+// Gnome-Logs
+//
+
+$logs_header: if($topbar == 'light', $titlebar, $theme_dark_yellow);
+
+headerbar.titlebar.event_toolbar {
+  background-color: $logs_header;
+  box-shadow: inset 0 1px highlight($logs_header), inset 0 -1px $divider;
+
+  &:backdrop { background-color: darken($logs_header, 2%); }
+}
+
+//
+// Geary
+//
+
+$geary_header: if($topbar == 'light', $titlebar, $theme_red);
+
+window#GearyMainWindow,
+window.geary-main-window { // > 3.36.0
+  headerbar {
+    background-color: $geary_header;
+    box-shadow: inset 0 1px highlight($geary_header), inset 0 -1px $divider;
+
+    &:backdrop { background-color: darken($geary_header, 2%); }
+
+    > headerbar {
+      box-shadow: none;
+    }
+  }
+
+  @include color_theme($theme_color: $theme_red);
+}
+
+window.geary-main-window {
+  > deck > overlay > box > leaflet > separator.sidebar,
+  > deck > overlay > box > leaflet > leaflet > headerbar + separator.sidebar {
+    background-color: $geary_header;
+    box-shadow: inset 0 -1px $divider;
+    transition: background-color $duration $ease-out,
+                color $duration $ease-out,
+                box-shadow $duration $ease-out;
+
+    &:backdrop { background-color: darken($geary_header, 2%); }
+  }
+}
+
+//
+// Budgie Setting Window
+//
+
+$budgie_header: if($topbar == 'light', $titlebar, $theme_blue_grey);
+
+window.background.csd.budgie-settings-window {
+  > headerbar.titlebar {
+    background-color: $budgie_header;
+    box-shadow: inset 0 1px highlight($budgie_header), inset 0 -1px $divider;
+
+    &:backdrop { background-color: darken($budgie_header, 2%); }
+  }
+
+  @include color_theme($theme_color:$theme_blue_grey);
+}
+
+//Dialogs
+
+$dialog_header: if($topbar == 'light', $titlebar, $theme_pink);
+
+dialog.background.csd {
+  > headerbar.titlebar {
+    background-color: $dialog_header;
+    box-shadow: inset 0 1px highlight($dialog_header), inset 0 -1px $divider;
+
+    &:backdrop { background-color: darken($dialog_header, 2%); }
+  }
+
+  @include color_theme($theme_color:$theme_pink);
+
+  scale {
+    slider {
+      color: $theme_pink;
+
+      @each $s, $as in ('', '') {
+        &#{$s} {
+          $_url: 'assets/scale-slider#{$as}#{$asset-suffix}-pink';
+
+          background-image: -gtk-scaled(url('#{$_url}.png'), url('#{$_url}@2.png')),
+                            radial-gradient(circle, transparent 10%, transparent 0%);
+        }
+      }
+
+      &:active {
+        $_url: 'assets/scale-slider#{$asset-suffix}-pink';
+        background-image: -gtk-scaled(url('#{$_url}.png'), url('#{$_url}@2.png')),
+                          radial-gradient(circle, $overlay-active 10%, transparent 0%);
+        background-size: auto, 0% 0%;
+      }
+    }
+  }
+
+  .linked.path-bar > button {
+    @extend %button-flat;
+
+    border-image: radial-gradient(circle closest-corner at center calc(100% - 1px),
+                                  $theme_pink 0%,
+                                  transparent 0%)
+                                  0 0 0 / 0 0 0px;
+
+    &:checked {
+      color: on($background);
+      border-image: radial-gradient(circle closest-corner at center calc(100% - 1px),
+                                    $theme_pink 100%,
+                                    transparent 0%)
+                                    0 0 2 / 0 0 2px;
+
+      &, &:disabled { background-color: transparent; }
+    }
+  }
+
+  // the sidebar
+  .sidebar row.activatable {
+    &:selected {
+      color: $theme_pink;
+
+      image, label { color: $theme_pink; }
+    }
+  }
+
+  notebook {
+    &:focus tab:checked {
+      box-shadow: inset 0 0 0 9999px rgba($theme_pink, 0.12);
+    }
+
+    > header {
+      &.top {
+        > tabs {
+          > tab {
+            border-image: linear-gradient(to top, transparent 2px, transparent 2px) 2 / 0 0 2px;
+
+            &:checked { border-image-source: linear-gradient(to top, $theme_pink 2px, $frame 2px); }
+          }
+        }
+      }
+
+      tab {
+        background-image: radial-gradient(circle, rgba($theme_pink, 0.35) 10%, transparent 0%);
+
+        &:checked {
+          background-image: radial-gradient(circle, transparent 10%, transparent 0%);
+        }
+      }
+    }
+  }
+}

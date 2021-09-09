@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+EXEC=$(which sv)
+
+usage() {
+    echo "usage: $(basename $0) SVDIR <sv args> ..."
+    if [ "$1" == "all" ]; then
+	SVUSAGE=$($EXEC --help 2>&1)
+	echo -e "\tsv args: $(printf "$SVUSAGE" | sed 's/usage: [^ ]* //')\n"
+    fi
+}
+
+unset NODIR RET
+if [ "$1" == "--help" ]; then
+    echo "svuser - manage services controlled by runit sv(1) with SVDIR as argument"
+    usage all
+    RET=0
+elif [ -d "$1" ]; then
+    ARGS="${@:2}"
+    SVDIR="$1" $EXEC $ARGS
+    RET=$?
+else
+    NODIR=1
+    RET=100
+fi
+
+if [ "$NODIR" == 1 ]; then
+    usage all
+elif [ "$RET" == 100 ]; then
+    usage
+elif [ -z "$RET" ]; then
+    RET=100
+fi
+
+exit $RET

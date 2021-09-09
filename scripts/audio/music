@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Tmux session with ncmpcpp and cover art
 NAME='mpd'
 _trap_exit() { tmux -L $NAME kill-session -t $$; }
 trap _trap_exit EXIT
 
-tmux -L $NAME new-session -s $$ "tmux source-file $XDG_CONFIG_HOME/ncmpcpp/tmux_session"
+tmux -L $NAME new-session -s $$ "tmux source-file $HOME/.config/ncmpcpp/tmux_session"

@@ -1,0 +1,49 @@
+#compdef svuser
+
+# modified completion for runit sv(1) for svuser with SVDIR arg
+# Originally by Leah Neukirchen <leah@vuxu.org>
+
+local ret=1 services
+
+_arguments \
+    '1: :->dir' \
+    '-v[verbose]' \
+    '-w[wait]:seconds' \
+    '2: :->cmds' \
+    '*:: :->args' && ret=0
+
+case $state in
+dir)
+    _directories && ret=0
+    ;;
+cmds)
+    _values "sv command" \
+        status \
+        up \
+        down \
+        once \
+        pause cont hup alarm interrupt quit 1 2 term kill \
+        exit
+    # above allow one-character shortcuts, complete these
+    [[ $words[CURRENT] = [sudopchaiq12tke] ]] ||
+    _values "sv command" \
+        start \
+        stop \
+        restart \
+        shutdown \
+        force-stop \
+        force-reload \
+        force-restart \
+        force-shutdown \
+        check
+    ret=0;;
+args)
+    [ ${#words} -lt 1 ]	|| SVDIR=$(eval realpath ${words[1]})
+    [ -d "$SVDIR" ]	|| SVDIR=/var/service
+    services=( "$SVDIR"/*(-/N:t) )
+    (( $#services )) && _values services $services && ret=0
+    [[ $words[CURRENT] = */* ]] && _directories && ret=0
+    ;;
+esac
+
+return $ret

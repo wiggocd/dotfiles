@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+_err() {
+    echo "$1" >&2
+    exit $2
+}
+
+getval() {
+    # $1: bus, $2: VCP
+    local str=$(ddcutil --bus=$1 getvcp $2)
+    local ret=$?
+    awk -F 'current value =' '{print $2}' <<< "$str" \
+	| sed -r 's/([^0-9]*([0-9]*)).*/\2/'
+    return $ret
+}
+
+setval() {
+    # $1: bus, $2: VCP, $3: value
+    ddcutil --bus=$1 setvcp $2 $3
+}
+
+modval() {
+    # $1: bus, $2: VCP, $3: difference
+    local BUS=$1
+    local VCP=$2
+    local DIFF=$3
+    
+    local current=$(getval $BUS $VCP)
+
+    if [ -n "$current" ]; then
+	local new=$(($current + $DIFF))
+
+	if [[ $(($new)) -gt 100 ]]; then
+	    new=100
+	elif [[ $(($new)) -lt 0 ]]; then
+	    new=0
+	fi
+
+	setval $BUS $VCP $new
+    fi
+}
+
+getdisplays() {
+    local str=$(ddcutil detect)
+    local ret=$?
+    sed -n '/^Display / {n;p}' <<< "$str" \
+	| sed 's/^.*i2c-//'
+}
+
+modall() {
+    # $1: VCP, $2: difference
+    local VCP=$1
+    local DIFF=$2
+    local i2c_list=($(getdisplays))
+    [ -n "$i2c_list" ] || _err "No displays detected" 1
+    
+    for bus in ${i2c_list[@]}; do
+	modval $bus $VCP $DIFF &
+    done
+
+    while [ -n "$(jobs -p)" ]; do
+	wait
+	read -t 0.2 <> <(:)
+    done
+}
+
+parse() {
+    if [ $(($1)) -ne 0 ]; then
+	modall 10 $1
+    else
+	_err "+ or - value is required to adjust brightness." 1
+    fi
+}
+
+parse $@

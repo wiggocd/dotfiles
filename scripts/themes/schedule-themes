@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+LOC="$HOME/.config/locations/current"
+
+err() { echo $1; exit $2; };
+[ -n "$LOC" ]                   || err "Current lat/long not found at \`$LOC\'" 1
+which heliocron >/dev/null 2>&1 || err 'No heliocron executable found.'     1
+
+LOCSTRING="$(fmt-helio-location < $LOC)"
+
+read -r -d '' CRON <<-EOF
+0 0 * * * $(which relaunch) $(which $0)
+EOF
+
+crontab -l \
+    | grep -i 'schedule-themes' \
+    | echo "$CRON" \
+    | crontab -
+
+relaunch heliocron $LOCSTRING wait --event sunrise || echo Continuing sunrise...
+settheme light
+
+relaunch heliocron $LOCSTRING wait --event sunset || echo Continuing sunset...
+settheme dark

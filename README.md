@@ -1,6 +1,6 @@
-# Dotfiles
+# Dotfiles / Under construction
 
-Configuration for Arch Linux
+Configuration for <s>Arch Linux</s> Void Linux
 
 ## Screenshots
 

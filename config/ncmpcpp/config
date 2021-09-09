@@ -1,6 +1,6 @@
 ##############################################################
 ## This is an example configuration file. Copy it to        ##
-## $XDG_CONFIG_HOME/ncmpcpp/config or $HOME/.ncmpcpp/config ##
+## $HOME/.config/ncmpcpp/config or $HOME/.ncmpcpp/config ##
 ## and set up your preferences.                             ##
 ##############################################################
 #
@@ -100,9 +100,9 @@
 ##
 #visualizer_type = spectrum
 #
-#visualizer_fps = 60
+visualizer_fps = 30
 #
-#visualizer_autoscale = no
+visualizer_autoscale = yes
 #
 #visualizer_look = ●▮
 #
@@ -111,6 +111,10 @@
 ## Alternative subset of 256 colors for terminals that support it.
 ##
 #visualizer_color = 47, 83, 119, 155, 191, 227, 221, 215, 209, 203, 197, 161
+#
+## Trans flag for xterm-256
+#visualizer_color = 231, 225, 224, 219, 213, 153, 87, 217, 217, 203, 197, 161, 160
+visualizer_color = 225, 219, 213, 153, 123, 87, 217, 209, 197, 161, 160
 #
 ##
 ## Note: The next few visualization options apply to the spectrum visualizer.
@@ -127,9 +131,9 @@
 ## visualizer look at a larger slice of time, which results in less jumpy
 ## visualizer output.
 #
-#visualizer_spectrum_dft_size = 2
+visualizer_spectrum_dft_size = 1
 #
-#visualizer_spectrum_gain = 10
+visualizer_spectrum_gain = 5
 #
 ## Left-most frequency of visualizer in Hz, must be less than HZ MAX
 #
@@ -319,7 +323,7 @@
 ## Note: Custom command that will be executed each time song changes. Useful for
 ## notifications etc.
 ##
-execute_on_song_change = "mpd-art-load >/dev/null"
+execute_on_song_change = "mpd-art-load >/dev/null 2>&1"
 #
 ##
 ## Note: Custom command that will be executed each time player state
@@ -327,7 +331,7 @@ execute_on_song_change = "mpd-art-load >/dev/null"
 ## state (either unknown, play, pause, or stop) for its duration.
 ##
 #
-execute_on_player_state_change = "mpd-art-load >/dev/null"
+execute_on_player_state_change = "mpd-art-load >/dev/null 2>&1"
 #
 #playlist_show_mpd_host = no
 #

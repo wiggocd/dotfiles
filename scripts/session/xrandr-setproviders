@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+XGFX="$(xrandr --listproviders)"
+CONF="$HOME/.config/xrandr/last"
+if [[ "$XGFX" == *" name:NVIDIA-0"*" name:Intel"* ]]; then
+    echo "Setting Intel and NVIDIA providers..."
+    xrandr --setprovideroutputsource Intel NVIDIA-0 || exit $?
+
+    if [ -f "$CONF" ]; then
+	echo "Sourcing xrandr config..."
+	source "$CONF" || exit $?
+    else
+	echo "No config found at \`$CONF'"
+    fi
+
+    [ -z "$RANDR_LOCK" ] || touch "$RANDR_LOCK"
+    exit $?
+else
+    echo "No external providers detected."
+    exit 1
+fi

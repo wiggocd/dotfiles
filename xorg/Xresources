@@ -1,1 +1,27 @@
-Xcursor.size: 22
+!-- X server --!
+Xft.dpi:	96
+Xcursor.size:	22
+
+!-- rxvt-unicode --!
+URxvt.font:     xft:Terminus:size=15
+URxvt.boldFont: xft:Terminus:size=15
+URxvt.letterSpace: -2
+
+URxvt.background:   0
+URxvt.foreground:   7
+URxvt.color0:   #0d0e0f
+URxvt.color1:   #ed4e4e
+URxvt.color2:   #13c236
+URxvt.color3:   #dd9c6d
+URxvt.color4:   #249dde
+URxvt.color5:   #9b59b6
+URxvt.color6:   #6cb5b3
+URxvt.color7:   #cccccc
+URxvt.color8:   #24272a
+URxvt.color9:   #ff8045
+URxvt.color10:  #25e27d
+URxvt.color11:  #fdbc4b
+URxvt.color12:  #3da4e9
+URxvt.color13:  #8e44ad
+URxvt.color14:  #68d0c9
+URxvt.color15:  #ffffff

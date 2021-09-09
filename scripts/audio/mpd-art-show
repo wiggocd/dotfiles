@@ -6,7 +6,8 @@
 
 source "$(ueberzug library)"
 
-COVER="/run/user/$UID/ncmpcpp/cover.png"
+UID=$(id -u)
+COVER="/tmp/ncmpcpp-$UID/cover.png"
 X_PADDING=0
 Y_PADDING=0
 
@@ -24,6 +25,23 @@ function you_wait() {
     done
 }
 
+run() {
+    clear
+    stty -echo
+    tput civis
+
+    while [ ! -f "$COVER" ]; do
+	sleep 0.5
+    done
+
+    ImageLayer 0< <(
+	add_cover
+	you_wait
+    )
+
+    exec $0
+}
+
 restore() {
     if [[ -t 0 && -n "${LAST_STTY-}" ]]; then
         stty "$LAST_STTY"
@@ -35,15 +53,5 @@ restore() {
 
 trap restore SIGINT SIGTERM
 LAST_STTY=$(stty -g)
-clear
-stty -echo
-tput civis
-
-while [ ! -f "$COVER" ]; do
-    sleep 0.5
-done
-
-ImageLayer 0< <(
-    add_cover
-    you_wait
-)
+run
+restore

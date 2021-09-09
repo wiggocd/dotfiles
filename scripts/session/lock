@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+LOCKER=xss-lock
+async="$1"
+if ps -C $LOCKER >/dev/null 2>&1; then
+    LOCKPID="$(pgrep $LOCKER | tail -n1)"
+
+    # Fork if no arguments were passed and xss-lock is active
+    if [[ $? == 0 && -z "$async" ]]; then
+	nohup "${BASH_SOURCE[0]}" --sync "1 $@" 0<&- &>/dev/null &
+	exit 0
+    fi
+else
+    unset LOCKPID
+fi
+
+trap restore SIGINT SIGTERM SIGKILL
+
+restore() {
+    physlock -L
+    [ -z "${LOCKPID-}" ] || enable-lock
+    exit
+}
+
+physlock &
+disable-lock
+
+#sleeplock=$(</etc/zzz.d/lockpath)
+#if [[ $? == 0 && -n "$LOCKPID" && -f "$sleeplock" ]]; then
+    #rm -f "$sleeplock"
+#fi
+
+if [ -e /dev/fd/${XSS_SLEEP_LOCK_FD:--1} ]; then
+    exec {XSS_SLEEP_LOCK_FD}<&-
+fi
+
+wait; restore

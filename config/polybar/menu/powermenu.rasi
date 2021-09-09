@@ -46,7 +46,7 @@ textbox-prompt-colon {
 	background-color: 				@al;
 	text-color: 					@fg;
 	expand: false;
-	str: "";
+	str: "";
 	font:							"feather 10";
 }
 

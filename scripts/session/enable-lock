@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+TIME_DIM=500
+TIME_LOCK=250
+
+disable-lock
+if [ -f "$LOCK_DISABLED" ]; then
+    rm -f "$LOCK_DISABLED"
+fi
+
+xset s $TIME_DIM $TIME_LOCK
+xss-lock --ignore-sleep -n dim -- lock & disown %1

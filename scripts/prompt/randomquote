@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 err() { echo "$1" >&2; exit $2; };
 
-DBLOC="$XDG_CONFIG_HOME/randomquote/quotes.db"
+DBLOC="$HOME/.config/randomquote/quotes.db"
 [[ -f "$DBLOC" && -r "$DBLOC" ]] \
     || err "No readable quote database found at $DBLOC" 1
 

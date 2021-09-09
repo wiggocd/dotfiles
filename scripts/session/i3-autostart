@@ -1,0 +1,217 @@
+#!/usr/bin/env bash
+# i3wm autostart script
+
+PIDFILE="/tmp/wm-autostart-$UID.pid"
+LOGFILE=""
+DATE_FMT="%x %X"
+XRES="$HOME/.Xresources"
+
+EXEC="$(basename $0)"
+
+read -r -d '' USAGE <<EOF
+Window manager application startup script
+${EXEC} [options ...]
+options:
+    -o <logfile>    Redirect stderr to specified file
+    -h		    Display this usage
+EOF
+
+# ---------------------
+#   Internal functions
+# ---------------------
+
+_rsleep() {
+    read -t 0.5 <> <(:)
+}
+
+_log() {
+    while read -r data; do
+	printf "%s %s\n" "[ $(date +"$DATE_FMT") $1 ]" "$data"
+    done
+}
+
+_run() {
+    if ! type $1 >/dev/null 2>&1; then
+        echo "No executable or builtin found for \`$1'"
+        return 1
+    fi
+    
+    echo "[ $(date +"$DATE_FMT") $NAME ] ** START"
+    
+    if [ "$KILL" != false ]; then
+	killgrep "$@"
+    fi
+    
+    if [ "$FORK" = false ]; then
+	$@ 2>&1 | _log "$NAME"
+    else
+	$@ 2>&1 | _log "$NAME" &
+    fi
+}
+
+_script() {
+    KILL=false _run bash $(which $1)
+}
+
+_end() {
+    JOBS="$(jobs -p)"
+    [[ -z "$JOBS" ]] || kill $JOBS >/dev/null 2>&1
+    
+    if [[ "$REPLACED" != true && -f "$PIDFILE" ]]; then
+	rm "$PIDFILE"
+    fi
+    
+    exec 3>&-
+
+    echo "[ $(date) ] -- i3-autostart END --"
+    [ -n "$1" ] && exit $1 || exit
+}
+
+_terminate() {
+    if [[ -n "$LOGFILE" && "$(cat "$PIDFILE" 2>&1)" != $$ ]]; then
+	REPLACED=true
+	exec 1>/dev/null 2>&1
+    else
+	REPLACED=false
+	echo -e "\n[ $(date) ] Recieved interrupt signal... exiting"
+    fi
+
+    _end 130
+}
+
+# ---------------------
+#   Parser internals
+# ---------------------
+
+_usage() {
+    echo "$USAGE"
+}
+
+_err() {
+    echo $1 >&2
+    echo "See output of \`$EXEC -h' for usage"
+    exit $2
+}
+
+# ---------------------
+#   Autostart stages
+#   Format:
+#	NAME='' FORK=<bool> KILL=<bool> <command>
+# ---------------------
+
+init() {
+    if which update-scripts >/dev/null 2>&1; then
+	NAME='UPDATE' FORK=false KILL=false _script update-scripts
+    else
+	NAME='UPDATE' FORK=false KILL=false _script $SCRIPT_DIR/update-scripts
+    fi
+}
+
+primary() {
+    [ ! -f "$XRES" ]	    || NAME='xrdb'	    _run xrdb -merge "$XRES"
+
+    [ -f "$RANDR_LOCK" ]    || NAME='xrandr-egpu'   FORK=false _script xrandr-setproviders \
+				&& export VSYNC=false
+
+    [ -f "$RANDR_LOCK" ]    || NAME='autorandr'	    FORK=false _run autorandr -c
+    [ ! -x "$HOME/.fehbg" ] || NAME='bg'	    _run source $HOME/.fehbg
+}
+
+secondary() {
+    NAME='libinput-gestures'	_run libinput-gestures
+    NAME='mpd'			_run mpd
+    NAME='mpDris2'		_run mpDris2
+    NAME='playerctld'           _run playerctld
+    NAME='xsettingsd'           _run xsettingsd
+    NAME='lxpolkit'		_run lxpolkit
+
+    NAME='picom'		_script $HOME/.config/picom/launch.sh
+    NAME='polybar'		_script $HOME/.config/polybar/launch.sh
+    NAME='redshift'		_script $HOME/.config/redshift/launch.sh
+}
+
+scripts() {
+    [ -f "$LOCK_DISABLED" ] || \
+	NAME='SCRIPT enable-lock'	    _script enable-lock
+
+    NAME='SCRIPT schedule-themes'	    _script schedule-themes
+    NAME='SCRIPT firefox-static-location'   _script firefox-static-location
+}
+
+# ---------------------
+#   Commands
+# ---------------------
+
+run() {
+    echo "[ $(date) ] -- i3-autostart BEGIN --"
+    unset NAME FORK KILL
+    trap _terminate SIGTERM SIGINT
+
+    if [ -f "$PIDFILE" ]; then
+	PID=$(cat "$PIDFILE")
+	echo $$ >"$PIDFILE"
+
+	if [ $((PID)) -gt 0 ]; then
+	    echo "[ $(date +"$DATE_FMT") ] Killing process $PID..."
+	    kill -TERM $PID
+	    while ps -p $PID >/dev/null 2>&1; do
+		_rsleep
+	    done
+	fi
+    else
+	echo $$ >"$PIDFILE"
+    fi
+
+   
+    init
+    primary
+    secondary
+    scripts
+
+    while true; do
+	wait -n || {
+	    if [ -z "$(jobs -p)" ]; then
+		[ $? = 127 ] && _end 0 || _end $?
+	    fi
+	}
+	_rsleep
+    done
+}
+
+# ---------------------
+#   Entrypoint
+# ---------------------
+
+_main() {
+    local ARGS=false
+    while getopts ":o:h-:" OPT; do
+	case "$OPT" in
+	    o)	LOGFILE="$OPTARG"
+		local ARGS=true
+		;;
+
+	    h)	_usage
+		return 0
+		;;
+	    
+	    :)	_err "Incomplete parameter \`-${OPTARG}'" 1
+		;;
+
+	    *)	_err "Invalid parameter \`-${OPTARG}'" 1
+		;;
+
+	    	esac
+    done
+    
+    if [ "$ARGS" == true ]; then
+	if [ -n "$LOGFILE" ]; then
+	    exec >"$LOGFILE" 2>&1
+	fi	
+    fi
+
+    run
+    return $?
+}
+
+_main $@
+exit $?

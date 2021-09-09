@@ -11,21 +11,19 @@
 
 set $mod Mod4
 
-# Applications
 set $FM         thunar
 set $BROWSER    firefox
-set $TERMINAL_A alacritty
-set $TERMINAL_B kitty
+set $TERMINAL   alacritty
 set $MUSIC      mpdterm
-set $AUTOSTART  relaunch i3-autostart
+set $AUTOSTART	i3-autostart -o $HOME/.config/i3/autostart.log
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font Gohu GohuFont 8
+# font xft:Terminus (TTF) 9
 
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
-#font pango:DejaVu Sans Mono 8
+font pango:DejaVu Sans Mono 8
 
 # Before i3 v4.8, we used to recommend this one as the default:
 # font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
@@ -34,12 +32,14 @@ font Gohu GohuFont 8
 # X core fonts rendering does not support right-to-left and this being a bitmap
 # font, it doesn’t scale on retina/hidpi displays.
 
+# Workspace assignment
+workspace 1 output eDP1
+
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return         exec --no-startup-id $TERMINAL_A
-bindsym $mod+Shift+Return   exec --no-startup-id $TERMINAL_B
+bindsym $mod+Return         exec --no-startup-id $TERMINAL
 
 # toggle autotiling
 bindsym $mod+Shift+a exec --no-startup-id toggle autotiling
@@ -91,6 +91,10 @@ bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
+# swap workspaces between monitors
+bindsym $mod+Shift+bracketleft	move workspace to output left
+bindsym $mod+Shift+bracketright	move workspace to output right
+
 # split in horizontal orientation
 bindsym $mod+h split h
 
@@ -101,9 +105,9 @@ bindsym $mod+v split v
 bindsym $mod+f fullscreen toggle
 
 # change container layout (stacked, tabbed, toggle split)
-bindsym $mod+s layout stacking
-bindsym $mod+w layout tabbed
-bindsym $mod+e layout toggle split
+#bindsym $mod+s layout stacking
+#bindsym $mod+w layout tabbed
+#bindsym $mod+e layout toggle split
 
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
@@ -172,10 +176,11 @@ bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ to
 bindsym XF86AudioPlay exec --no-startup-id player play-pause
 bindsym XF86AudioNext exec --no-startup-id player next
 bindsym XF86AudioPrev exec --no-startup-id player prev
+bindsym $mod+Shift+n exec --no-startup-id player next
 
 # brightness controls
-bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl s +5%
-bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl s 5%-
+bindsym XF86MonBrightnessUp exec --no-startup-id    xbacklight +5%
+bindsym XF86MonBrightnessDown exec --no-startup-id  xbacklight -5%
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -186,10 +191,10 @@ bindsym $mod+Shift+e exec "i3-nagbar -t warning -m \
     'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
 # power options
-bindsym $mod+Shift+Ctrl+p exec --no-startup-id systemctl poweroff
-bindsym $mod+Shift+Ctrl+r exec --no-startup-id systemctl reboot
-bindsym $mod+Shift+Ctrl+s exec --no-startup-id systemctl suspend
-bindsym $mod+Shift+Ctrl+l exec --no-startup-id loginctl lock-session
+bindsym $mod+Shift+Ctrl+p exec --no-startup-id loginctl poweroff
+bindsym $mod+Shift+Ctrl+r exec --no-startup-id loginctl reboot
+bindsym $mod+Shift+Ctrl+s exec --no-startup-id loginctl suspend 
+bindsym $mod+Shift+Ctrl+l exec --no-startup-id lock
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -232,13 +237,17 @@ gaps outer 3
 bindsym $mod+Escape exec --no-startup-id xdg-open https://i3wm.org/docs/refcard.html
 
 # window properties
-for_window  [class=".*"] 					border none
-for_window  [window_role="notification"] 	floating enable
-for_window  [window_role="pop-up"] 			floating enable
-for_window  [window_role="task_dialog"] 	floating enable
-for_window  [class="feh-popup"]			    floating enable
+for_window  [class=.]			    border none
+# for_window  [floating] 		    border none
+# for_window  [tiling]			    border pixel 1
+for_window  [window_role="notification"]    floating enable
+for_window  [window_role="pop-up"]	    floating enable
+for_window  [window_role="task_dialog"]     floating enable
+for_window  [class="feh-popup"]		    floating enable
+for_window  [class="Gcolor3"]		    floating enable
+for_window  [class="Pavucontrol"]	    floating enable
 
-for_window  [class="(?i)firefox" \
+for_window  [class="(?i)Firefox" \
             instance="(?i)Toolkit" \
             title="(?i)Picture-in-Picture"] sticky enable
 
@@ -247,9 +256,10 @@ for_window  [class="(?i)Alacritty" \
 
 no_focus    [class="feh-popup"]
 
-# client.focused      #a98d6b #a98d6b #a98d6b #a98d6b
-# client.unfocused    #000000 #000000 #000000 #000000
+client.focused      #a98d6b #a98d6b #a98d6b #a98d6b
+client.unfocused    #000000 #000000 #000000 #000000
 
 # autostart
-exec --no-startup-id autotiling
-exec_always --no-startup-id $AUTOSTART
+exec_always --no-startup-id		    $AUTOSTART
+exec_always --no-startup-id		    toggle autotiling true
+

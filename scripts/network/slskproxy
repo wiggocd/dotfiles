@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+_err() {
+    echo "$1" >&2
+    exit $2
+}
+
+EX_IP=$(which ip)	    || _err "'ip' executable not found" 1  
+EX_TOR=$(which tor)	    || _err "'tor' executable not found" 1
+EX_SLSK=$(which nicotine)   || _err "Soulseek client 'nicotine' not found" 1
+EX_TUN2S=$(which tun2socks) || _err "'tun2socks' executable not found" 1
+SU_EXEC=$(which sudo)	    || _err "'sudo' executable not found" 1
+
+SERVER="slsknet.org"
+DEV_NAME="tun0"
+DEV_PROTO="tun"
+PROXY="socks5://127.0.0.1:9050"
+
+if ! ps -C tor >/dev/null 2>&1; then
+    echo "Starting tor..."
+    $SU_EXEC -v && \
+	sh -c "$SU_EXEC $EX_TOR" &
+
+    unset waiting
+    while ! tor-resolve $SERVER >/dev/null 2>&1; do
+	if [ -z "$waiting" ]; then
+	    printf "Waiting for tor to resolve the domain $SERVER..."
+	    waiting=1
+	else
+	    printf "."
+	fi
+	
+	read -t 1 <> <(:)
+    done
+    [ -z "$waiting" ] || echo
+else
+    echo "External tor instance running."
+fi
+
+echo "Starting proxy interface..."
+$SU_EXEC -v && \
+    sh -c "$SU_EXEC $EX_TUN2S -device ${DEV_PROTO}://${DEV_NAME} -proxy $PROXY" &
+
+unset waiting
+while ! $EX_IP link show $DEV_NAME >/dev/null 2>&1; do
+    if [ -z "$waiting" ]; then
+	printf "Waiting for interface ${DEV_NAME}..."
+	waiting=1
+    else
+	printf "."
+    fi
+    
+    read -t 1 <> <(:)
+done
+
+[ -z "$waiting" ] || echo
+echo "Setting interface up..."
+$SU_EXEC -v && \
+    $SU_EXEC $EX_IP link set $DEV_NAME up || _err "Failed to set interface up."
+
+echo "Starting nicotine+"
+echo "Ensure that the network interface is set to $DEV_NAME in preferences."
+exec $EX_SLSK

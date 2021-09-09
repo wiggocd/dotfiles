@@ -1,22 +1,31 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-DIM=$(xdpyinfo | awk '/dimensions:/ { print $2 }')
-SPLIT=($(echo "$DIM" | sed 's/x/ /'))
+#DIM=$(xdpyinfo | awk '/dimensions:/ { print $2 }')
+#SPLIT=( $(echo "$DIM" | sed 's/x/ /') )
 
-col=82
-lin=20
+#col=82
+#lin=20
+col=92
+lin=35
 off=16
 
-w=${SPLIT[0]}
-h=${SPLIT[1]}
-x=$(( w - (col*8) - off ))
-y=$(( h - (lin*14) - off ))
+#w=${SPLIT[0]}
+#h=${SPLIT[1]}
+#x=$(( w - (col*15) - off ))
+#y=$(( h - (lin*20) - off ))
 
 EXEC=$(which music)
+#alacritty   -o "window.dimensions: \
+            #{'columns': ${col}, lines: ${lin}}" \
+            #-o "window.position: \
+            #{'x': ${x}, 'y': ${y}}" \
+            #-o "window.class: \
+            #{'instance': 'music'}" \
+            #-o "window.padding: \
+            #{'x': 4, 'y': 4}" \
+            #-e "$EXEC"
 alacritty   -o "window.dimensions: \
-            {'columns': 82, lines: 20}" \
-            -o "window.position: \
-            {'x': ${x}, 'y': ${y}}" \
+            {'columns': ${col}, lines: ${lin}}" \
             -o "window.class: \
             {'instance': 'music'}" \
             -o "window.padding: \

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# $1: executable, $2: reload (optional bool)
+[ -n "$1" ] || exit 1
+EXEC="$1"
+RELOAD="$2"
+
+UID="$(id -u)"
+LOCK="/tmp/${EXEC}-${UID}.lock"
+if [ "$RELOAD" == "true" ]; then
+    [ -n "$LOCK" ] && exec "$EXEC" &
+else
+    if PID=$(pgrep $1); then
+	kill -TERM $PID
+	rm -f "$LOCK"
+    else
+	touch "$LOCK"
+	exec "$EXEC" &
+    fi
+fi

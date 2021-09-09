@@ -1,17 +1,22 @@
 #!/usr/bin/env bash
-
 SRC="$HOME/scripts"
 BIN="$HOME/.local/scripts"
-[ -d "$BIN" ] || mkdir -p "$BIN"
 
-find "$BIN" -type l |
-    while read file; do
-        rm "$file"
-    done
+if [ -d "$BIN" ]; then
+    find "$BIN" -type l |
+        while read LINK; do
+            rm "$LINK"
+        done
+else
+    mkdir -p "$BIN" || exit 1
+fi
 
-find "$SRC" -not -path '*/\.*' -type f |
-    while read file; do
-        ln -s "$file" "$BIN/$(basename $file)"
+find "$SRC"/* -type d |
+    while read DIR; do
+        find -L "$DIR" -not -path '*/\.*' -type f |
+            while read FILE; do
+                ln -s "$FILE" "$BIN/$(basename $FILE)"
+            done
     done
 
 [ "$PATH" == *"$BIN"* ] || export PATH="$BIN:$PATH"

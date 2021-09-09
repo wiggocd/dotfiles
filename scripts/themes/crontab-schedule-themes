@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+read -r -d '' LINES <<-EOF
+0 0 * * * $(which relaunch) $(which schedule-themes)
+EOF
+
+crontab -l \
+    | grep -i 'schedule-themes' \
+    | echo "$LINES" \
+    | crontab -

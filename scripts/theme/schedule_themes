@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-LOCSTRING="$(fmt_helio_location < $XDG_CONFIG_HOME/locations/current)"
-
-relaunch heliocron $LOCSTRING wait --event sunrise || echo Continuing sunrise...
-settheme light
-
-relaunch heliocron $LOCSTRING wait --event sunset || echo Continuing sunset...
-settheme dark

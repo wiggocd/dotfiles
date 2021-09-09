@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+FF="$HOME/.mozilla/firefox"
+PROFILES="$FF/profiles.ini"
+LOCPATH="$HOME/.config/locations/current"
+[[ -e "$PROFILES" && -e "$LOCPATH" ]] || exit 1
+
+RELEASE=$(sed -ne '/^\[Profile0\]$/,$p' "$PROFILES" \
+    | sed -ne 's/^Path=//p' \
+    | head -n1)
+
+[ -d "$FF/$RELEASE" ] || exit 1
+
+echo "Using release $RELEASE"
+
+CONF="$FF/$RELEASE/user.js"
+[ -f "$CONF" ] || touch "$CONF"
+
+LOC_SPLIT=($(cat "$LOCPATH" | sed 's/:/ /'))
+[ ${#LOC_SPLIT[@]} == 2 ] || exit 1
+
+LAT=${LOC_SPLIT[0]}
+LNG=${LOC_SPLIT[1]}
+
+VAL_TEMPLATE='data:application/json,{\"location\": {\"lat\": LAT, \"lng\": LNG}, \"accuracy\": 27000.0}'
+VAL_AMMEND_LAT=${VAL_TEMPLATE/LAT/$LAT}
+VAL_AMMEND="\"${VAL_AMMEND_LAT/LNG/$LNG}\""
+
+PREF_TEMPLATE='user_pref("geo.provider.network.url", VAL);'
+PREF_PREFIX=$(echo "$PREF_TEMPLATE" | cut -d ' ' -f 1)
+PREF_AMMEND=${PREF_TEMPLATE/VAL/$VAL_AMMEND}
+
+OUT=$(cat "$CONF" | grep -v "$PREF_PREFIX"; echo -e "$PREF_AMMEND")
+echo "$OUT" > "$CONF"

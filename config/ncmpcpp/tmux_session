@@ -1,13 +1,19 @@
 neww
 
-WIDTH_0=32
+HEIGHT_B=18
+WIDTH_L=32
 set -g status off
-set-hook -g client-resized "resize-pane -t 0 -x $WIDTH_0"
 
+send-keys 'ncmpcpp' C-m
+
+split-window -v
 send-keys 'mpd-art-show' C-m
 
 split-window -h
-resize-pane -t 0 -x $WIDTH_0
-select-pane -t 1
+send-keys 'ncmpcpp -s visualizer' C-m
 
-send-keys 'ncmpcpp' C-m
+resize-pane -t 2 -y $HEIGHT_B
+resize-pane -t 2 -x $WIDTH_L
+
+select-pane -t 1
+set-hook -g client-resized "resize-pane -t 2 -x $WIDTH_L"

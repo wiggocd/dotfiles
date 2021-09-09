@@ -1,7 +1,18 @@
-export QT_QPA_PLATFORMTHEME="qt5ct"
+. $HOME/.profile
+
 export TERMINAL="alacritty"
+export QT_QPA_PLATFORMTHEME="qt5ct"
+export MOZ_USE_XINPUT2=1
 
-export RANDR_LOCK="/run/user/$UID/randr.lock"
-export LOCK_DISABLED="/run/user/$UID/disable.lock"
+test -n "${UID-}" || export UID=$(id -u)
+export RANDR_LOCK="/tmp/randr-${UID}.lock"
+export LOCK_DISABLED="/tmp/nolock-${UID}.lock"
+rm -f $RANDR_LOCK $LOCK_DISABLED
 
-source $HOME/.profile
+tmp=$(/usr/bin/env iw dev | grep -Po '.*Interface \Kwl.*')
+if [ $? ]; then export NET=$tmp; fi
+
+xset r rate 280 30
+xsetroot -solid black
+pactl load-module module-bluetooth-discover
+autotiling &

@@ -1,4 +1,14 @@
-source /etc/profile
+. /etc/profile
 
-export SCRIPTS="$HOME/.local/scripts"
-export PATH="$HOME/.local/bin:$SCRIPTS:$PATH"
+export SCRIPT_SRC="$HOME/scripts"
+export SCRIPT_DIR="$HOME/.local/scripts"
+
+export PATH="$HOME/.local/bin:$SCRIPT_SRC:$SCRIPT_DIR:$HOME/.cargo/bin:$PATH"
+export EDITOR=vim
+
+export SVDIR_USER="$HOME/.service"
+
+if ! pgrep -U $USER Xorg >/dev/null 2>&1 && test $(basename $TTY) = 'tty1'; then
+    startx
+    exit
+fi
