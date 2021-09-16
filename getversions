@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+_err() {
+    echo "$1" >&2
+    exit $2
+}
+
+EXEC=$(basename $0)
+PKGMAN=$(which xbps-query 2>&1) || _err \`"xbps-query' not available." 1
+
+usage() {
+	expand --tabs=4 <<-EOF
+	usage: $EXEC [options] [path to package list]
+	Outputs package versions from xbps into a file.
+
+	options:
+		-o [filename]         specify output file
+		-h                    display usage
+	EOF
+}
+
+while getopts ":o:h" opt; do
+	case $opt in 
+		o)  OUT="$OPTARG" ;;
+		h)  usage; exit 0 ;;
+		*)  echo "Invalid option -$OPTARG, run \`$EXEC -h\` to show usage" >&2;
+			exit 1 ;;
+	esac
+done
+
+shift $((OPTIND-1))
+
+IN="$PWD"/PACKAGES
+PWD="$(pwd)"
+[ -n "${1-}" ] &&   ( ([ -f "$1" ] && IN="$1") \
+		    || _err "Input file does not exist" 1 )
+
+([ -n "${OUT-}" ] && OUT="$OUT") \
+	|| OUT="$PWD"/VERSIONS
+
+rm "$OUT"
+while read pkg; do
+    $PKGMAN -p pkgver $pkg >>"$OUT"
+done < "$IN"

@@ -110,8 +110,7 @@ init() {
 primary() {
     [ ! -f "$XRES" ]	    || NAME='xrdb'	    _run xrdb -merge "$XRES"
 
-    [ -f "$RANDR_LOCK" ]    || NAME='xrandr-egpu'   FORK=false _script xrandr-setproviders \
-				&& export VSYNC=false
+    [ -f "$RANDR_LOCK" ]    || NAME='xrandr-egpu'   FORK=false _script xrandr-setproviders
 
     [ -f "$RANDR_LOCK" ]    || NAME='autorandr'	    FORK=false _run autorandr -c
     [ ! -x "$HOME/.fehbg" ] || NAME='bg'	    _run source $HOME/.fehbg

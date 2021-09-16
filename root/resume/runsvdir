@@ -1,0 +1,5 @@
+#!/bin/sh
+[ "$1" != "pre" ] || exit 1
+for service in /var/service/runsvdir-*; do
+    sv hup $(basename $service)
+done

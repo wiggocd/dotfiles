@@ -1,0 +1,392 @@
+#!/usr/bin/env bash
+
+unset USE_SUDO
+ROOTDIR="$(pwd)"
+USER="$(whoami)"
+
+IN_SCRIPTS="$ROOTDIR/scripts"
+IN_DOTFILES="$ROOTDIR/home"
+IN_CONFIG="$ROOTDIR/config"
+IN_IMAGES="$ROOTDIR/images"
+IN_FONTS="$ROOTDIR/fonts"
+IN_VIM="$ROOTDIR/vim"
+IN_TMUX="$ROOTDIR/tmux"
+IN_THEME_GTK="$ROOTDIR/themes/ChromeOS-theme"
+IN_THEME_CURSOR="$ROOTDIR/themes/openzone-cursors"
+IN_FIREFOX="$ROOTDIR/firefox"
+IN_SYSTEMD="$ROOTDIR/archlinux/systemd"
+IN_RUNIT="$ROOTDIR/runit"
+IN_ROOT="$ROOTDIR/root"
+IN_XORG="$IN_ROOT/xorg"
+
+OUT_SCRIPTS="$HOME/scripts"
+OUT_DOTFILES="$HOME"
+OUT_CONFIG="$HOME/.config"
+OUT_IMAGES="$HOME/Pictures"
+OUT_FONTS="$HOME/.local/share/fonts"
+OUT_THEME_CURSOR="$HOME/.icons"
+OUT_FIREFOX="$HOME/.mozilla/firefox"
+OUT_SYSTEMD_ROOT="/etc/systemd/system"
+OUT_SYSTEMD_USER="$OUT_CONFIG/systemd/user"
+OUT_RUNIT_ROOT="/etc/sv"
+OUT_RUNIT_ROOT_ACTIVATE="/var/service"
+OUT_RUNIT_USER="$HOME/.service"
+OUT_XORG_CONF="/etc/X11/xorg.conf.d"
+OUT_ROOT_CONFIG="/etc"
+OUT_ROOT_BIN="/usr/local/bin"
+OUT_ZZZ="/etc/zzz.d"
+OUT_ELOGIND="/lib/elogind"
+OUT_ELOGIND_ALT="/usr/libexec/elogind"
+OUT_ZSH="/usr/share/zsh"
+
+# ***************
+# Internal functions	
+# ***************
+
+_err() {
+    echo "$1" >&2
+    exit $2
+}
+
+_seterr() {
+    ERR=$?
+}
+
+_input() {
+    # $1: message, $2: output variable
+    local -n var="$2"
+    printf "$1"
+    read var
+}
+
+_conditional() {
+    # $1: message, $2: function, [ $3: default (y or n) ]
+    local msg="$1"
+    local func="$2"
+    [ -n "$3" ] && local default="$3" || local default=n
+
+    local res
+    _input "$msg" res
+    if [ "${res,,}" = 'y' ] \
+	|| ( [ -z "$res" ] && [ "$default" = 'y' ] ); then
+	$func
+    fi
+}
+
+_autoroot() {
+    # $1 ...: command
+    [ -n "$EXEC_SUDO" ] || $EXEC_SUDO -E
+    $EXEC_SUDO $@
+}
+
+_cpdest() {
+    # $1 ...: files, last: destination dir
+    local in="${@:1:$# -1}"
+    local out="${@: -1}"
+    if [ -n "$USE_SUDO" ]; then
+	_autoroot mkdir -p "$out" && \
+	    _autoroot cp -R $in "$out"
+    else
+	mkdir -p "$out" && \
+	cp -R $in "$out"
+    fi
+}
+
+_cpdest_root() {
+    USE_SUDO=true _cpdest $@
+}
+
+_test_notempty() {
+    # $1: directory
+    if [ -d "$1" ] && [ -n "$(ls -A "$1" 2>&1)" ]; then
+	return 0
+    else
+	return 1
+    fi
+}
+
+# ***************
+# Copy stages	
+# ***************
+
+c_scripts() {
+    echo "Copying scripts..."
+    _cpdest "$IN_SCRIPTS"/* "$OUT_SCRIPTS"
+}
+
+c_dotfiles() {
+    echo "Copying hidden home files..."
+    mkdir -p "$OUT_DOTFILES"
+    for f in "$IN_DOTFILES"/*; do
+	if [ -f "$f" ]; then
+	    cp "$f" "$OUT_DOTFILES/.$(basename $f)"
+	fi
+    done
+}
+
+c_config() {
+    echo "Copying program config home..."
+    _cpdest "$IN_CONFIG"/* "$OUT_CONFIG"
+}
+
+c_images() {
+    echo "Copying images..."
+    _cpdest "$IN_IMAGES/bg" "$OUT_IMAGES/Wallpaper"
+}
+
+c_fonts() {
+    echo "Copying fonts..."
+    _cpdest "$IN_FONTS"/* "$OUT_FONTS"
+}
+
+# ***************
+# Install stages	
+# ***************
+
+i_scripts() {
+    echo "Updating scripts path..."
+    "$OUT_SCRIPTS"/update-scripts
+}
+
+i_themes() {
+    echo "** Installing themes..."
+
+    echo "Installing gtk themes..."
+    local gtk_install="$IN_THEME_GTK/install.sh"
+    if [ -x "$gtk_install" ]; then
+	$gtk_install
+    else
+	echo "No gtk theme install executable found at \`$gtk_install', continuing..."
+    fi
+
+    echo "Installing cursor themes..."
+    local cursor_src="$IN_THEME_CURSOR/src"
+    if [ -d "$cursor_src" ] && _test_notempty "$cursor_src"; then
+	_cpdest "$cursor_src"/OpenZone* "$OUT_THEME_CURSOR"
+    else
+	echo "No cursor themes found at \`$cursor_src', continuing..."
+    fi
+}
+
+i_vim() {
+    echo "Copying vimrc..."
+    _cpdest "$IN_VIM/vimrc" "$OUT_DOTFILES/.vimrc"
+}
+
+i_tmux() {
+    echo "Copying tmux.conf..."
+    _cpdest "$IN_TMUX/tmux.conf" "$OUT_DOTFILES/.tmux.conf"
+}
+
+i_firefox() {
+    echo "** Installing firefox config..."
+    _cpdest "$IN_FIREFOX/user.js" "$OUT_FIREFOX"
+    if [ -f "$OUT_FIREFOX/profiles.ini" ]; then
+	local release_name=$(sed -ne '/^\[Profile0\]$/,$p' "$OUT_FIREFOX/profiles.ini" \
+	    | sed -ne 's/^Path=//p' \
+	    | head -n1)
+
+	if [ -n "$release_name" ]; then
+	    local release="$OUT_FIREFOX/$release_name"
+	    if [ -d "$release" ]; then
+		cp "$OUT_FIREFOX/user.js" "$release"
+		exit $?
+	    fi
+	fi
+    fi
+
+    echo "No firefox profiles found, continuing..."
+}
+
+_i_systemd() {
+    # Untested
+    if _test_notempty "$IN_SYSTEMD/root"; then
+	echo "Copying systemd system-wide services..."
+	_cpdest_root "$IN_SYSTEMD/root"/* "$OUT_SYSTEMD_ROOT"
+
+	echo "Enabling systemd system-wide services..."
+	for s in "$IN_SYSTEMD/root"/*.service; do
+	    _autoroot systemctl enable $(basename $s)
+	done
+
+	for s in "$IN_SYSTEMD/root"/*@.service; do
+	    _autoroot systemctl enable $(basename $s)@$USER.service
+	done
+    fi
+
+    if _test_notempty "$IN_SYSTEMD/user"; then
+	echo "Copying systemd user services..."
+	_cpdest "$IN_SYSTEMD/user"/* "$OUT_SYSTEMD_USER"
+    
+	echo "Enabling systemd system-wide services..."
+	for s in "$IN_SYSTEMD/root"/*.service; do
+	    _autoroot systemctl enable --user $(basename $s)
+	done
+    fi
+}
+
+_i_runit() {
+    echo "Copying runit system-wide services..."
+    ! _test_notempty "$IN_RUNIT/root" || \
+	_cpdest_root "$IN_RUNIT/root"/* "$OUT_RUNIT_ROOT"
+
+    echo "Copying runit user services..."
+    ! _test_notempty "$IN_RUNIT/user" || \
+	_cpdest "$IN_RUNIT/user"/* "$OUT_RUNIT_USER"
+
+    if [ -d "$OUT_RUNIT_ROOT/runsvdir-user" ] && [ ! -d "$OUT_RUNIT_ROOT/runsvdir-$USER" ]; then
+	echo "Enabling services..."
+	_autoroot mkdir -p "$OUT_RUNIT_ROOT_ACTIVATE"
+	_autoroot cp -R "$OUT_RUNIT_ROOT/runsvdir-user" "$OUT_RUNIT_ROOT/runsvdir-$USER" && \
+	_autoroot ln -sf "$OUT_RUNIT_ROOT/runsvdir-$USER" "$OUT_RUNIT_ROOT_ACTIVATE/runsvdir-$USER"
+    fi
+}
+
+i_services() {
+    if which systemctl >/dev/null 2>&1; then
+	echo "** Installing services..."
+	_i_systemd
+    elif which runit >/dev/null 2>&1; then
+	echo "** Installing services..."
+	_i_runit
+    else
+	echo "No service manager found. Continuing..." >&2
+    fi
+}
+
+i_xorg() {
+    echo "** Installing xorg configuration..."
+    ! _test_notempty "$IN_XORG/xorg.conf.d" || \
+	_cpdest_root "$IN_XORG/xorg.conf.d"/* "$OUT_XORG_CONF"
+    
+    echo "Copying system-wide xorg profile..."
+    [ ! -f "$IN_XORG/xprofile" ] || \
+	_cpdest_root "$IN_XORG/xprofile" "$OUT_ROOT_CONFIG"
+}
+
+i_root_scripts() {
+    echo "** Installing system-wide scripts..."
+    ! _test_notempty "$IN_ROOT/scripts" || \
+	_cpdest_root "$IN_ROOT/scripts"/* "$OUT_ROOT_BIN"
+
+    echo "Copying shell autocompletions..."
+    ! _test_notempty "$IN_ROOT/autocompletions" || \
+	_cpdest_root "$IN_ROOT/autocompletions"/* "$OUT_ZSH/site-functions"
+}
+
+i_root_suspend() {
+    echo "** Installing suspend/resume scripts..."
+    if [ ! -d "$OUT_ELOGIND/system-sleep" ]; then
+	_autoroot mkdir -p "$OUT_ELOGIND_ALT/system-sleep"
+	_autoroot ln -sf "$OUT_ELOGIND_ALT" "$OUT_ELOGIND"
+    fi
+
+    if _test_notempty "$IN_ROOT/suspend"; then
+	local tmp="$IN_ROOT/.scripts-exec"
+
+	_cpdest "$IN_ROOT/suspend"/* "$tmp"
+	chmod +x "$tmp"/*
+
+	_cpdest_root "$tmp"/* "$OUT_ZZZ/suspend"
+	rm -rf "$tmp"
+
+	for s in "$OUT_ZZZ/suspend"; do
+	    _autoroot ln -sf "$s" "$OUT_ELOGIND/system-sleep/$(basename $s)" 
+	done
+    fi
+
+    if _test_notempty "$IN_ROOT/resume"; then
+	local tmp="$IN_ROOT/.scripts-exec"
+
+	_cpdest "$IN_ROOT/resume"/* "$tmp"
+	chmod +x "$tmp"/*
+
+	_cpdest_root "$tmp"/* "$OUT_ZZZ/resume"
+	rm -rf "$tmp"
+
+	for s in "$OUT_ZZZ/resume"; do
+	    _autoroot ln -sf "$s" "$OUT_ELOGIND/system-sleep/$(basename $s)" 
+	done
+    fi
+}
+
+# ***************
+# Install
+# ***************
+
+install_dotfiles() {
+    echo "** Installing dotfiles..."
+    ERR=0
+
+    c_scripts	|| _seterr
+    c_dotfiles	|| _seterr
+    c_config	|| _seterr
+    c_images	|| _seterr
+    c_fonts	|| _seterr
+
+    i_scripts	|| _seterr
+    i_vim	|| _seterr
+    i_tmux	|| _seterr
+
+    _conditional "Install themes? (Y/n) " \
+		i_themes 'y' \
+		|| _seterr
+
+    _conditional "Install Firefox configuration? (Y/n) " \
+		i_firefox 'y' \
+		|| _seterr
+
+    _conditional "Install recommended runit/systemd services? [Requires root] (Y/n) " \
+		i_services 'y' \
+		|| _seterr
+
+    _conditional "Install system Xorg configuration? [Requires root, machine specific] (y/N) " \
+		i_xorg 'n' \
+		|| _seterr
+
+    _conditional "Install recommended root scripts? [Requires root] (Y/n) " \
+		i_root_scripts 'y' \
+		|| _seterr
+
+    _conditional "Install suspend/resume scripts for automatic theming? [Requires root] (Y/n) " \
+		i_root_suspend 'y' \
+		|| _seterr
+
+    if [ $(($ERR)) -gt 0 ]; then
+	echo "** Installed dotfiles with non-zero exit status, see above logs for more information."
+    else
+	echo "** Installed dotfiles."
+    fi
+
+    echo "You may now reboot <3"
+    exit $ERR
+}
+
+# ***************
+# Entrypoint
+# ***************
+
+if [ "$USER" = "root" ]; then
+    unset EXEC_SUDO
+else
+    EXEC_SUDO="$(which sudo)" \
+	|| _err "Cannot execute commands as root. Exiting..." 1
+fi
+
+cat <<-EOF
+** Linux dotfiles configuration script **
+Make sure that you have read the readme and installed the required dependencies.
+This script should only be run from the repository root.
+
+The script **will** overwrite various configuration files,
+so please don't proceed if you have any configurations that you have not backed up.
+EOF
+
+_input "Proceed to installation? (y/N) " res
+if [ "$res" == "y" ]; then
+    install_dotfiles
+    exit $?
+else
+    echo "No changes made. Exiting..."
+    exit 0
+fi

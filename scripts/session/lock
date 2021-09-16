@@ -22,13 +22,10 @@ restore() {
     exit
 }
 
-physlock &
 disable-lock
-
-#sleeplock=$(</etc/zzz.d/lockpath)
-#if [[ $? == 0 && -n "$LOCKPID" && -f "$sleeplock" ]]; then
-    #rm -f "$sleeplock"
-#fi
+physlock -l
+# sxlock -df terminus &
+slock &
 
 if [ -e /dev/fd/${XSS_SLEEP_LOCK_FD:--1} ]; then
     exec {XSS_SLEEP_LOCK_FD}<&-

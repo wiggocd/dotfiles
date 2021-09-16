@@ -13,6 +13,7 @@ if [[ "$XGFX" == *" name:NVIDIA-0"*" name:Intel"* ]]; then
     fi
 
     [ -z "$RANDR_LOCK" ] || touch "$RANDR_LOCK"
+    export VSYNC=false
     exit $?
 else
     echo "No external providers detected."

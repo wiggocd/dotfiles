@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-if ps -C xss-lock >/dev/null 2>&1 \
-    && ! ps -C physlock >/dev/null 2>&1; then
-    physlock -d
-fi
+xset s activate
+t=0
+timeout=3
+while ps -C xss-lock >/dev/null 2>&1 && [ $((t)) -lt $((timeout)) ]; do
+    read -t 1 <> <(:)
+    t=$((t+1))
+done

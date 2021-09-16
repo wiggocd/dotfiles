@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+XCONF="/etc/X11/xorg.conf.d"
+CONF_EGPU="$XCONF/10-nvidia.conf.dynamic"
+CONF_TMP="$XCONF/10-nvidia.conf"
+BUSID=0000:03:00.0
+BUS_ROOT="/sys/bus/pci"
+DRIVER=nvidia
+
+_err() {
+    echo "$1" >&2
+    exit $2
+}
+
+[[ -d "$XCONF" && -w "$XCONF" ]]    || _err "\`$XCONF' is not writable" 1
+[ -f "$CONF_EGPU" ]		    || _err "Config \`$CONF_EGPU' not found" 1
+[ -z "$1" ]			    || BUSID="$1"
+
+echo "Searching for PCI device in slot ${BUSID}..."
+if [ -n "$(lspci -s "$BUSID")" ]; then
+    echo "Found device"
+    if [[ "$BUS_ROOT/devices/$BUSID/driver" -ef "$BUS_ROOT/drivers/$DRIVER" ]]; then
+	if [ ! -f "$CONF_TMP" ]; then
+	    ln -s "$CONF_EGPU" "$CONF_TMP" && echo "Created link to eGPU config."
+	    exit $?
+	fi
+	exit 0
+    fi
+else
+    echo "No device found"
+    if [ -f "$CONF_TMP" ]; then
+	rm "$CONF_TMP" && echo "Removed temporary graphics config."
+	exit $?
+    fi
+    exit 0
+fi

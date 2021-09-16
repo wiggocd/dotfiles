@@ -9,4 +9,4 @@ if [ -f "$LOCK_DISABLED" ]; then
 fi
 
 xset s $TIME_DIM $TIME_LOCK
-xss-lock --ignore-sleep -n dim -- lock & disown %1
+xss-lock --transfer-sleep-lock -n dim -- lock & disown %1

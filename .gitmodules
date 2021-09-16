@@ -1,0 +1,6 @@
+[submodule "themes/ChromeOS-theme"]
+	path = themes/ChromeOS-theme
+	url = https://github.com/rainbowgoth/ChromeOS-theme
+[submodule "themes/openzone-cursors"]
+	path = themes/openzone-cursors
+	url = https://github.com/ducakar/openzone-cursors

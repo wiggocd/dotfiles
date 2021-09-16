@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
-## Author  : Aditya Shakya
-## Mail    : adi1090x@gmail.com
-## Github  : @adi1090x
-## Twitter : @adi1090x
+##   License:	GPLv3
+##   Authors:	Original (c) Aditya Shakya (adi1090x),
+##		Kriss Wiggins (rainbowgoth)
 
 DIR="$HOME/.config/polybar/menu"
 rofi_command="rofi -theme $DIR/powermenu.rasi"
@@ -21,12 +20,12 @@ confirm_exit() {
 		-i\
 		-no-fixed-num-lines\
 		-p "Are You Sure? : "\
-		-theme $DIR/$theme/confirm.rasi
+		-theme $DIR/confirm.rasi
 }
 
 # Message
 msg() {
-	rofi -theme "$DIR/$theme/message.rasi" -e "Available Options  -  yes / y / no / n"
+	rofi -theme "$DIR/message.rasi" -e "Available Options  -  yes / y / no / n"
 }
 
 # Variable passed to rofi

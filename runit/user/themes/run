@@ -1,0 +1,4 @@
+#!/bin/sh
+. ~/.profile
+schedule-themes
+exec chpst pause

@@ -1,0 +1,6 @@
+@import "launcher.rasi"
+window {
+    location:                       southwest;
+    x-offset:                       8;
+    y-offset:                       -52;
+}
