@@ -1,4 +1,4 @@
-# Dotfiles / Under construction
+# Dotfiles
 
 Configuration for Void Linux
 
@@ -14,7 +14,7 @@ Configuration for Void Linux
 
 **WM** [i3-gaps](https://github.com/Airblader/i3)
 
-**Compositor** [picom](https://github.com/yshui/picom)
+**Compositor** [picom](https://github.com/ibhagwan/picom)
 
 **Bar** [polybar](https://github.com/polybar/polybar), [original theme by adi1090x](https://github.com/adi1090x/polybar-themes) (updated)
 
