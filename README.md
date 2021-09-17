@@ -51,7 +51,7 @@ All packages listed should be accessible from the main Void Linux repository.
 ## Installation
 
 - Clone the repository and change directory to the project root
-- `git submodule update`
+- `git submodule update --init`
 - Run `./install` from the project root to install the configuration files automatically
     - *WARNING: Configuration files **will** be overwritten*
 
