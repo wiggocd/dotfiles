@@ -97,6 +97,7 @@ Extensions:
     - `tmux`
     - `vim`
     - `images` - wallpaper, repository images
+    - `packages` - external xbps-src packages
     - `archlinux` - backup configurations for the previous Arch-based configuration
 
 ### Maintenance

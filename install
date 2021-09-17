@@ -18,6 +18,10 @@ IN_SYSTEMD="$ROOTDIR/archlinux/systemd"
 IN_RUNIT="$ROOTDIR/runit"
 IN_ROOT="$ROOTDIR/root"
 IN_XORG="$IN_ROOT/xorg"
+IN_PKG="$ROOTDIR/packages"
+IN_PKG_VOID="$IN_PKG/void-packages"
+IN_PKG_PICOM="$IN_PKG/picom-ibhagwan-template"
+
 
 OUT_SCRIPTS="$HOME/scripts"
 OUT_DOTFILES="$HOME"
@@ -310,6 +314,34 @@ i_root_suspend() {
     fi
 }
 
+i_packages() {
+    echo "** Installing packages..."
+    printf "Enter path to void-packages repository (enter return for default submodule)> "
+    read res
+    [ ! -d "$res" ] || IN_PKG_VOID="$res"
+
+    if [ -x "$IN_PKG_VOID/xbps-src" ]; then
+	if [ -f "$IN_PKG_PICOM/template" ]; then
+	    cd "$IN_PKG_VOID"
+	    
+	    if ./xbps-src binary-bootstrap; then
+		echo XBPS_ALLOW_RESTRICTED=yes >> etc/conf
+
+		echo "Installing picom-ibhagwan..."
+		cp -R "$IN_PKG_PICOM" srcpkgs/picom-ibhagwan && \
+		./xbps-src pkg picom-ibhagwan && \
+		_autoroot xbps-install --repository=hostdir/binpkgs --yes picom-ibhagwan
+	    fi
+
+	    cd "$ROOTDIR"
+	else
+	    echo "Package template not found in \`$IN_PKG_PICOM', continuing..."
+	fi
+    else
+	echo "xbps-src executable not found in \`$IN_PKG_VOID', continuing..."
+    fi
+}
+
 # ***************
 # Install
 # ***************
@@ -350,6 +382,11 @@ install_dotfiles() {
 
     _conditional "Install suspend/resume scripts for automatic theming? [Requires root] (Y/n) " \
 		i_root_suspend 'y' \
+		|| _seterr
+
+    _conditional "Install custom Void xbps packages? (picom-ibhagwan) \
+[Requires xbps, non-root and sudo; may take time] (Y/n) " \
+		i_packages 'y' \
 		|| _seterr
 
     if [ $(($ERR)) -gt 0 ]; then

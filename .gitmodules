@@ -4,3 +4,9 @@
 [submodule "themes/openzone-cursors"]
 	path = themes/openzone-cursors
 	url = https://github.com/ducakar/openzone-cursors
+[submodule "packages/void-packages"]
+	path = packages/void-packages
+	url = https://github.com/void-linux/void-packages
+[submodule "packages/picom-ibhagwan-template"]
+	path = packages/picom-ibhagwan-template
+	url = https://github.com/ibhagwan/picom-ibhagwan-template
