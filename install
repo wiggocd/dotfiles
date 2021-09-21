@@ -286,29 +286,17 @@ i_root_suspend() {
     fi
 
     if _test_notempty "$IN_ROOT/suspend"; then
-	local tmp="$IN_ROOT/.scripts-exec"
+	_cpdest_root "$IN_ROOT/suspend"/* "$OUT_ZZZ/suspend"
 
-	_cpdest "$IN_ROOT/suspend"/* "$tmp"
-	chmod +x "$tmp"/*
-
-	_cpdest_root "$tmp"/* "$OUT_ZZZ/suspend"
-	rm -rf "$tmp"
-
-	for s in "$OUT_ZZZ/suspend"; do
+	for s in "$OUT_ZZZ/suspend"/*; do
 	    _autoroot ln -sf "$s" "$OUT_ELOGIND/system-sleep/$(basename $s)" 
 	done
     fi
 
     if _test_notempty "$IN_ROOT/resume"; then
-	local tmp="$IN_ROOT/.scripts-exec"
+    	_cpdest_root "$IN_ROOT/resume"/* "$OUT_ZZZ/resume"
 
-	_cpdest "$IN_ROOT/resume"/* "$tmp"
-	chmod +x "$tmp"/*
-
-	_cpdest_root "$tmp"/* "$OUT_ZZZ/resume"
-	rm -rf "$tmp"
-
-	for s in "$OUT_ZZZ/resume"; do
+	for s in "$OUT_ZZZ/resume"/*; do
 	    _autoroot ln -sf "$s" "$OUT_ELOGIND/system-sleep/$(basename $s)" 
 	done
     fi
@@ -385,8 +373,8 @@ install_dotfiles() {
 		|| _seterr
 
     _conditional "Install custom Void xbps packages? (picom-ibhagwan) \
-[Requires xbps, non-root and sudo; may take time] (Y/n) " \
-		i_packages 'y' \
+[Requires xbps, non-root and sudo; may take time] (y/N) " \
+		i_packages 'n' \
 		|| _seterr
 
     if [ $(($ERR)) -gt 0 ]; then

@@ -1,3 +1,0 @@
-#!/bin/sh
-[ "$1" != "pre" ] || exit 1
-nmcli d wifi rescan
